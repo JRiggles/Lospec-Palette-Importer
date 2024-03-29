@@ -2,7 +2,7 @@
 
 #### An Aseprite extension
 
-*current release: v0.1.0*
+*current release: v0.1.1*
 
 ##
 
