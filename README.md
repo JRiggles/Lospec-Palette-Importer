@@ -43,6 +43,6 @@ To use this plugin, just open the "Options" menu above the color palette and the
 
 ## Installation
 
-You can download this extension from [itch.io]() as a "pay what you want" tool
+You can download this extension from [itch.io](https://sudo-whoami.itch.io/lospec-palette-importer) as a "pay what you want" tool
 
 If you find this extension useful, please consider donating via itch.io to support further development! &hearts;
