@@ -139,7 +139,7 @@ local function main()
         :label { text = "Palette name:"}
         :entry { id = "rawName", focus = true}
         :separator()
-        :label { text = "Palette names are case-insestitive and may only"}
+        :label { text = "Palette names are case-insenstitive and may only"}
         :newrow()
         :label { text = "contain the following characters:" }
         :newrow()
