@@ -6,7 +6,7 @@
 
 ##
 
-This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Losepec palette you want to import.
+This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
 <img src="./screenshots/import dialog.png"></img>
 
