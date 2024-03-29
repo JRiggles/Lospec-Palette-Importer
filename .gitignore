@@ -1,0 +1,4 @@
+*.aseprite-extension
+*.vscode/
+*.zip
+.DS_Store
