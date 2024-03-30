@@ -95,9 +95,9 @@ local function replaceAccents(str)
     return normalizedString
 end
 
--- NOTE: this is a lua implementation of Sam Keddy's (skeddles') slugify which is used by Lospec
+-- NOTE: this is a lua implementation of Sam Keddy's (skeddles') sluggify which is used by Lospec
 -- https://github.com/skeddles/sluggify
-local function slugify(text)
+local function sluggify(text)
     local slug = text
         :gsub("[\\/ ]+", "-") -- replace slashes and spaces with dashes "-"
         slug = replaceAccents(slug) -- replace all accent characters w/ their 'normal' equiv.
@@ -231,7 +231,7 @@ local function main()
     if namePromptDlg.data.ok then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = namePromptDlg.data.rawName
-        local paletteName = slugify(rawName)
+        local paletteName = sluggify(rawName)
 
         if paletteName == nil or paletteName == "" then
             local invalidInputDlg = Dialog("Invalid Palette Name")
