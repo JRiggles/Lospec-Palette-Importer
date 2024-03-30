@@ -1,17 +1,12 @@
 # Lospec Palette Importer
 
 #### An Aseprite extension
-
 *current release: [v1.0.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
-##
-
 ## Latest Changes
-
 - Implement a lua version of [skeddles/sluggify](https://github.com/skeddles/sluggify) to "sluggify" user input into Lospec palette list URL slugs (replaces the previous input sanitizing method - this is the sluggifier used by Lospec, so it should offer maximum compatibility!)
 
 ##
-
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
 <img src="./screenshots/import dialog.png"></img>
@@ -25,7 +20,6 @@ This extension has been tested on both Windows and Mac OS (specifically, Windows
 It is intended to run on Aseprite version 1.3 and requires API version 1.3-rc5 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
-
 When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command. Addtionally, this extension will need your permission to write files if you intend to save any imported palettes.
 
 When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access" (you'll only need to do this once)
@@ -33,7 +27,6 @@ When prompted, select the "Give full trust to this script" checkbox and then cli
 <img src="./screenshots/security dialog.png"></img>
 
 ## Features & Usage
-
 Once you've imported the palette you want, you can...
 - Save it as a preset and use it immedeately
 - Use it without saving
@@ -48,7 +41,6 @@ To use this plugin, just open the "Options" menu above the color palette and the
 <img src="./screenshots/palette menu selection.png"></img>
 
 ## Installation
-
 You can download this extension from [itch.io](https://sudo-whoami.itch.io/lospec-palette-importer) as a "pay what you want" tool
 
 If you find this extension useful, please consider donating via itch.io to support further development! &hearts;
