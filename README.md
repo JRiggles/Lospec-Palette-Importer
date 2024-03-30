@@ -8,7 +8,7 @@
 
 ## Latest Changes
 
-- Implement a lua version of [skeddles/slugify](https://github.com/skeddles/sluggify) to "slugify" user input into Lospec palette list URL slugs (replaces the previous input sanitizing method - this is the slugifier used by Lospec, so it should offer maximum compatibility!)
+- Implement a lua version of [skeddles/sluggify](https://github.com/skeddles/sluggify) to "sluggify" user input into Lospec palette list URL slugs (replaces the previous input sanitizing method - this is the slugifier used by Lospec, so it should offer maximum compatibility!)
 
 ##
 
