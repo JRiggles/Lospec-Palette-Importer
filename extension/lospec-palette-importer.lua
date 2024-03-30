@@ -14,20 +14,100 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 -- ignore dialogs which are defined with local names for readablity, but may be unused
 ---@diagnostic disable: unused-local
 
-local function sanitizeInput(rawInput)
-    -- check for invalid characters in the user's input, bail if any are found
-    -- NOTE: refusing to work w/ invalid characters is a workaround for an Aseprite crash on bad
-    -- input
-    local sanitizedInput, nReplacements = string.gsub(rawInput, "[^A-Za-z0-9 %-%[%]']", "")
-    if nReplacements > 0 then -- raw input contains invalid characters
-        return nil
+-- local utf8 = require("utf8") -- utf8 lib is necessary to handle special characters
+-- NOTE: looks like utf8 is included in the Aseprite API as a global
+
+local letters = { -- mapping of replacementChar characters
+    ["áàâǎăãảȧạäåḁāąⱥȁấầẫẩậắằẵẳặǻǡǟȁȃａ"] = "a",
+    ["ÁÀÂǍĂÃẢȦẠÄÅḀĀĄȺȀẤẦẪẨẬẮẰẴẲẶǺǠǞȀȂＡ"] = "A",
+    ["ḃḅḇƀᵬᶀｂ"] = "b",
+    ["ḂḄḆɃƁʙＢ"] = "B",
+    ["ćĉčċçḉȼɕｃƇ"] = "c",
+    ["ĆĈČĊÇḈȻＣƈ"] = "C",
+    ["ďḋḑḍḓḏđɗƌｄᵭᶁᶑȡ"] = "d",
+    ["ĎḊḐḌḒḎĐƉƊƋＤᴅᶑȡ"] = "D",
+    ["éèêḙěĕẽḛẻėëēȩęɇȅếềễểḝḗḕȇẹệｅᶒⱸ"] = "e",
+    ["ÉÈÊḘĚĔẼḚẺĖËĒȨĘɆȄẾỀỄỂḜḖḔȆẸỆＥᴇ"] = "E",
+    ["ḟƒｆᵮᶂ"] = "f",
+    ["ḞƑＦ"] = "F",
+    ["ǵğĝǧġģḡǥɠｇᶃ"] = "g",
+    ["ǴĞĜǦĠĢḠǤƓＧɢ"] = "G",
+    ["ĥȟḧḣḩḥḫ̱ẖħⱨｈ"] = "h",
+    ["ĤȞḦḢḨḤḪĦⱧＨʜ"] = "H",
+    ["íìĭîǐïḯĩįīỉȉȋịḭɨiıｉ"] = "i",
+    ["ÍÌĬÎǏÏḮĨĮĪỈȈȊỊḬƗİIＩ"] = "I",
+    ["ĵɉｊʝɟʄǰ"] = "j",
+    ["ĴɈＪᴊ"] = "J",
+    ["ḱǩķḳḵƙⱪꝁｋᶄ"] = "k",
+    ["ḰǨĶḲḴƘⱩꝀＫᴋ"] = "K",
+    ["ĺľļḷḹḽḻłŀƚⱡɫｌɬᶅɭȴ"] = "l",
+    ["ĹĽĻḶḸḼḺŁĿȽⱠⱢＬʟ"] = "L",
+    ["ḿṁṃɱｍᵯᶆ"] = "m",
+    ["ḾṀṂⱮＭᴍ"] = "M",
+    ["ńǹňñṅņṇṋṉɲƞｎŋᵰᶇɳȵ"] = "n",
+    ["ŃǸŇÑṄŅṆṊṈṉƝȠＮŊɴ"] = "N",
+    ["óòŏôốồỗổǒöȫőõṍṏȭȯȱøǿǫǭōṓṑỏȍȏơớờỡởợọộɵｏⱺᴏ"] = "o",
+    ["ÓÒŎÔỐỒỖỔǑÖȪŐÕṌṎȬȮȰØǾǪǬŌṒṐỎȌȎƠỚỜỠỞỢỌỘƟＯ"] = "O",
+    ["ṕṗᵽ"] = "p",
+    ["ṔṖⱣƤＰ"] = "P",
+    ["ɋʠｑ"] = "q",
+    ["ɊＱ"] = "Q",
+    ["ŕřṙŗȑȓṛṝṟɍɽｒᵲᶉɼɾᵳ"] = "r",
+    ["ŔŘṘŖȐȒṚṜṞɌⱤＲʀ"] = "R",
+    ["śṥŝšṧṡşṣṩșｓßẛᵴᶊʂȿſ"] = "s",
+    ["ŚṤŜŠṦṠŞṢṨȘＳẞ"] = "S",
+    ["ťṫţṭțṱṯŧⱦƭʈｔẗᵵƫȶ"] = "t",
+    ["ŤṪŢṬȚṰṮŦȾƬƮＴᴛ"] = "T",
+    ["úùŭûǔůüǘǜǚǖűũṹųūṻủȕȗưứừữửựụṳṷṵʉᶙ"] = "u",
+    ["ÚÙŬÛǓŮÜǗǛǙǕŰŨṸŲŪṺỦȔȖƯỨỪỮỬỰỤṲṶṴɄＵ"] = "U",
+    ["ṽṿʋｖⱱⱴᴠᶌ"] = "v",
+    ["ṼṾƲＶ"] = "V",
+    ["ẃẁŵẅẇẉⱳｗẘ"] = "w",
+    ["ẂẀŴẄẆẈⱲＷ"] = "W",
+    ["ẍẋｘᶍ"] = "x",
+    ["ẌẊＸ"] = "X",
+    ["ýỳŷÿỹẏȳỷỵɏƴｙẙ"] = "y",
+    ["ÝỲŶŸỸẎȲỶỴɎƳＹʏ"] = "Y",
+    ["źẑžżẓẕƶȥⱬｚᵶᶎʐʑɀᴢ"] = "z",
+    ["ŹẐŽŻẒẔƵȤⱫＺ"] = "Z",
+}
+
+local function replaceAccents(str)
+    local normalizedString = ''
+    for _, char in utf8.codes(str) do -- convert the strign into constituent utf8 bytes
+        local replaced = false
+        for accentChars, replacementChar in pairs(letters) do
+            for _, accent in utf8.codes(accentChars) do
+                if char == accent then
+                    normalizedString = normalizedString .. replacementChar
+                    replaced = true
+                    break
+                end
+            end
+            if replaced then
+                break
+            end
+        end
+        if not replaced then -- no replacementChar necessary, append the character as-is
+            normalizedString = normalizedString .. utf8.char(char)
+        end
     end
-    -- replace spaces with '-', make lowercase for case-insestitivity
-    sanitizedInput = string.lower(string.gsub(sanitizedInput, "[ ]", "-"))
-    -- replace brackets and apostrophes with empty strings
-    sanitizedInput = string.lower(string.gsub(sanitizedInput, "['%[%]]", ""))
-    return sanitizedInput
-  end
+    return normalizedString
+end
+
+-- NOTE: this is a lua implementation of Sam Keddy's (skeddles') slugify which is used by Lospec
+-- https://github.com/skeddles/sluggify
+local function slugify(text)
+    local slug = text
+        :gsub("[\\/ ]+", "-") -- replace slashes and spaces with dashes "-"
+        slug = replaceAccents(slug) -- replace all accent characters w/ their 'normal' equiv.
+        :gsub("[^A-Za-z0-9%-]+", "") -- remove all non-alphanumeric characters
+        :gsub("[%-]+", "-") -- replace multiple consecutive dashes with a single dash
+        :gsub("^%-+", "") -- remove leading dashes
+        :gsub("%-+$", "") -- remove trailing dashes
+        :lower()
+    return slug
+end
 
 local function hexToColor(hex)
     -- take a 'hex' color string and convert it to a Color object
@@ -115,7 +195,7 @@ local function getJSONData(url)
         if file then
             local result = file:read("*a")
             file:close()
-            -- os.remove(tempFilePath) -- NOTE: raises function not supported
+            -- os.remove(tempFilePath) -- NOTE: os.remove is not currently available in Aseprite
             os.execute("rm " .. tempFilePath) -- remove temporary file
             return result
         else
@@ -151,7 +231,7 @@ local function main()
     if namePromptDlg.data.ok then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = namePromptDlg.data.rawName
-        local paletteName = sanitizeInput(rawName)
+        local paletteName = slugify(rawName)
 
         if paletteName == nil or paletteName == "" then
             local invalidInputDlg = Dialog("Invalid Palette Name")
