@@ -123,7 +123,7 @@ local function main()
     end
 
     local namePromptDlg = Dialog("Import Palette from Lospec")
-        :label { text = "Palette name:"}
+        :label { text = "Palette name (or Lospec URL slug):"}
         :entry { id = "rawName", focus = true}
         :separator()
         :label { text = "Palette names are case-insenstitive" }
