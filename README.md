@@ -1,7 +1,7 @@
 # Lospec Palette Importer
 
 #### An Aseprite extension
-*current release: [v1.0.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.1.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
 - Implement a lua version of [skeddles/sluggify](https://github.com/skeddles/sluggify) to "sluggify" user input into Lospec palette list URL slugs (replaces the previous input sanitizing method - this is the sluggifier used by Lospec, so it should offer maximum compatibility!)
