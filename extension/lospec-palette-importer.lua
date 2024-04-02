@@ -1,6 +1,6 @@
 --[[
 MIT LICENSE
-Copyright © 2024 John Riggles
+Copyright © 2024 John Riggles [sudo_whoami]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -14,100 +14,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 -- ignore dialogs which are defined with local names for readablity, but may be unused
 ---@diagnostic disable: unused-local
 
--- local utf8 = require("utf8") -- utf8 lib is necessary to handle special characters
--- NOTE: looks like utf8 is included in the Aseprite API as a global
-
-local letters = { -- mapping of replacementChar characters
-    ["áàâǎăãảȧạäåḁāąⱥȁấầẫẩậắằẵẳặǻǡǟȁȃａ"] = "a",
-    ["ÁÀÂǍĂÃẢȦẠÄÅḀĀĄȺȀẤẦẪẨẬẮẰẴẲẶǺǠǞȀȂＡ"] = "A",
-    ["ḃḅḇƀᵬᶀｂ"] = "b",
-    ["ḂḄḆɃƁʙＢ"] = "B",
-    ["ćĉčċçḉȼɕｃƇ"] = "c",
-    ["ĆĈČĊÇḈȻＣƈ"] = "C",
-    ["ďḋḑḍḓḏđɗƌｄᵭᶁᶑȡ"] = "d",
-    ["ĎḊḐḌḒḎĐƉƊƋＤᴅᶑȡ"] = "D",
-    ["éèêḙěĕẽḛẻėëēȩęɇȅếềễểḝḗḕȇẹệｅᶒⱸ"] = "e",
-    ["ÉÈÊḘĚĔẼḚẺĖËĒȨĘɆȄẾỀỄỂḜḖḔȆẸỆＥᴇ"] = "E",
-    ["ḟƒｆᵮᶂ"] = "f",
-    ["ḞƑＦ"] = "F",
-    ["ǵğĝǧġģḡǥɠｇᶃ"] = "g",
-    ["ǴĞĜǦĠĢḠǤƓＧɢ"] = "G",
-    ["ĥȟḧḣḩḥḫ̱ẖħⱨｈ"] = "h",
-    ["ĤȞḦḢḨḤḪĦⱧＨʜ"] = "H",
-    ["íìĭîǐïḯĩįīỉȉȋịḭɨiıｉ"] = "i",
-    ["ÍÌĬÎǏÏḮĨĮĪỈȈȊỊḬƗİIＩ"] = "I",
-    ["ĵɉｊʝɟʄǰ"] = "j",
-    ["ĴɈＪᴊ"] = "J",
-    ["ḱǩķḳḵƙⱪꝁｋᶄ"] = "k",
-    ["ḰǨĶḲḴƘⱩꝀＫᴋ"] = "K",
-    ["ĺľļḷḹḽḻłŀƚⱡɫｌɬᶅɭȴ"] = "l",
-    ["ĹĽĻḶḸḼḺŁĿȽⱠⱢＬʟ"] = "L",
-    ["ḿṁṃɱｍᵯᶆ"] = "m",
-    ["ḾṀṂⱮＭᴍ"] = "M",
-    ["ńǹňñṅņṇṋṉɲƞｎŋᵰᶇɳȵ"] = "n",
-    ["ŃǸŇÑṄŅṆṊṈṉƝȠＮŊɴ"] = "N",
-    ["óòŏôốồỗổǒöȫőõṍṏȭȯȱøǿǫǭōṓṑỏȍȏơớờỡởợọộɵｏⱺᴏ"] = "o",
-    ["ÓÒŎÔỐỒỖỔǑÖȪŐÕṌṎȬȮȰØǾǪǬŌṒṐỎȌȎƠỚỜỠỞỢỌỘƟＯ"] = "O",
-    ["ṕṗᵽ"] = "p",
-    ["ṔṖⱣƤＰ"] = "P",
-    ["ɋʠｑ"] = "q",
-    ["ɊＱ"] = "Q",
-    ["ŕřṙŗȑȓṛṝṟɍɽｒᵲᶉɼɾᵳ"] = "r",
-    ["ŔŘṘŖȐȒṚṜṞɌⱤＲʀ"] = "R",
-    ["śṥŝšṧṡşṣṩșｓßẛᵴᶊʂȿſ"] = "s",
-    ["ŚṤŜŠṦṠŞṢṨȘＳẞ"] = "S",
-    ["ťṫţṭțṱṯŧⱦƭʈｔẗᵵƫȶ"] = "t",
-    ["ŤṪŢṬȚṰṮŦȾƬƮＴᴛ"] = "T",
-    ["úùŭûǔůüǘǜǚǖűũṹųūṻủȕȗưứừữửựụṳṷṵʉᶙ"] = "u",
-    ["ÚÙŬÛǓŮÜǗǛǙǕŰŨṸŲŪṺỦȔȖƯỨỪỮỬỰỤṲṶṴɄＵ"] = "U",
-    ["ṽṿʋｖⱱⱴᴠᶌ"] = "v",
-    ["ṼṾƲＶ"] = "V",
-    ["ẃẁŵẅẇẉⱳｗẘ"] = "w",
-    ["ẂẀŴẄẆẈⱲＷ"] = "W",
-    ["ẍẋｘᶍ"] = "x",
-    ["ẌẊＸ"] = "X",
-    ["ýỳŷÿỹẏȳỷỵɏƴｙẙ"] = "y",
-    ["ÝỲŶŸỸẎȲỶỴɎƳＹʏ"] = "Y",
-    ["źẑžżẓẕƶȥⱬｚᵶᶎʐʑɀᴢ"] = "z",
-    ["ŹẐŽŻẒẔƵȤⱫＺ"] = "Z",
-}
-
-local function replaceAccents(str)
-    local normalizedString = ''
-    for _, char in utf8.codes(str) do -- convert the strign into constituent utf8 bytes
-        local replaced = false
-        for accentChars, replacementChar in pairs(letters) do
-            for _, accent in utf8.codes(accentChars) do
-                if char == accent then
-                    normalizedString = normalizedString .. replacementChar
-                    replaced = true
-                    break
-                end
-            end
-            if replaced then
-                break
-            end
-        end
-        if not replaced then -- no replacementChar necessary, append the character as-is
-            normalizedString = normalizedString .. utf8.char(char)
-        end
-    end
-    return normalizedString
-end
-
--- NOTE: this is a lua implementation of Sam Keddy's (skeddles') sluggify which is used by Lospec
--- https://github.com/skeddles/sluggify
-local function sluggify(text)
-    local slug = text
-        :gsub("[\\/ ]+", "-") -- replace slashes and spaces with dashes "-"
-        slug = replaceAccents(slug) -- replace all accent characters w/ their 'normal' equiv.
-        :gsub("[^A-Za-z0-9%-]+", "") -- remove all non-alphanumeric characters
-        :gsub("[%-]+", "-") -- replace multiple consecutive dashes with a single dash
-        :gsub("^%-+", "") -- remove leading dashes
-        :gsub("%-+$", "") -- remove trailing dashes
-        :lower()
-    return slug
-end
+local sluggify = require("sluggify")
 
 local function hexToColor(hex)
     -- take a 'hex' color string and convert it to a Color object
@@ -162,7 +69,7 @@ local function writeGplFile(savePath, name, author, url, colors)
     gplFile:write("#" .. #colors .. " colors", "\n")
     gplFile:write(
         "#Imported into Aseprite via \"Lospec Palette Importer\"",
-        " - (C)2024 J. Riggles - MIT LICENSE",
+        " - (C)2024 J. Riggles [sudo_whoami] - MIT LICENSE",
         "\n"
     )
     -- write each color to the gpl file as rgb values with the hex code as a comment
@@ -219,11 +126,7 @@ local function main()
         :label { text = "Palette name:"}
         :entry { id = "rawName", focus = true}
         :separator()
-        :label { text = "Palette names are case-insenstitive and may only"}
-        :newrow()
-        :label { text = "contain the following characters:" }
-        :newrow()
-        :label { text = "A-Z, a-z, 0-9, space, hyphen/dash (-), brackets ([])" }
+        :label { text = "Palette names are case-insenstitive" }
         :button { id = "ok", text = "OK" }
         :button { id = "cancel", text = "Cancel" }
         :show()
@@ -231,7 +134,7 @@ local function main()
     if namePromptDlg.data.ok then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = namePromptDlg.data.rawName
-        local paletteName = sluggify(rawName)
+        local paletteName = sluggify.sluggify(rawName)
 
         if paletteName == nil or paletteName == "" then
             local invalidInputDlg = Dialog("Invalid Palette Name")
