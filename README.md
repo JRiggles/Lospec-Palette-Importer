@@ -28,7 +28,7 @@ When prompted, select the "Give full trust to this script" checkbox and then cli
 
 ## Features & Usage
 Once you've imported the palette you want, you can...
-- Save it as a preset and use it immedeately
+- Save it as a preset and use it immediately
 - Use it without saving
 - Save it as a preset without overriding the currently selected palette
 
