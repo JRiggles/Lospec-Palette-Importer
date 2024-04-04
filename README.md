@@ -1,10 +1,11 @@
 # Lospec Palette Importer
 
 #### An Aseprite extension
-*current release: [v1.1.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.2.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
-- Implement a lua version of [skeddles/sluggify](https://github.com/skeddles/sluggify) to "sluggify" user input into Lospec palette list URL slugs (replaces the previous input sanitizing method - this is the sluggifier used by Lospec, so it should offer maximum compatibility!)
+- You can now set a custom path for saved palettes. Once you've updated this, the change will persist until you change it again or reset it to the default path.
+> Thanks to Lospec Discord user @Emad for the idea / feature request!
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
@@ -17,7 +18,7 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 
 This extension has been tested on both Windows and Mac OS (specifically, Windows 11 and Mac OS Sonoma 14.3.1)
 
-It is intended to run on Aseprite version 1.3 and requires API version 1.3-rc5 (as long as you have the latest version of Aseprite, you should be fine!)
+It is intended to run on Aseprite version 1.3 or later and requires API version 1.3-rc5 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
 When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command. Addtionally, this extension will need your permission to write files if you intend to save any imported palettes.
