@@ -14,7 +14,46 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 -- ignore dialogs which are defined with local names for readablity, but may be unused
 ---@diagnostic disable: unused-local
 
-local sluggify = require("sluggify")
+local sluggify = require("sluggify") -- used to convert user input into valid URL slugs
+
+local preferences = {} -- create a global table to store extension preferences
+local defaultSavePath = app.fs.joinPath(app.fs.userConfigPath, "palettes")
+
+local function isDirectory(path)
+    -- return true if path exists and is a directory, false otherwise
+    local file = io.open(path, "r")
+    if file then
+        local isDir = file:read("*a") == nil
+        file:close()
+        return isDir
+    else
+        return false
+    end
+end
+
+local function setSavePath()
+    -- allow the user to set a custom path for saved palettes (or restore the default path)
+    local setPathDlg = Dialog("Enter Path for Saved Palettes")
+        :entry { id = "savePathOverride", text = preferences.paletteSavePath }
+        setPathDlg:button {
+            text = "Reset to Default",
+            onclick = function ()
+                setPathDlg:modify { id = "savePathOverride", text = defaultSavePath }
+            end
+        }
+        :button { text = "Use This Path", focus = true }
+        :show()
+
+    local newPath = setPathDlg.data.savePathOverride
+    if isDirectory(newPath) then
+        preferences.paletteSavePath = newPath
+    else
+        app.alert {
+            title = "Invalid Directory",
+            text = "The specified path is not an existing directory."
+        }
+    end
+end
 
 local function hexToColor(hex)
     -- take a 'hex' color string and convert it to a Color object
@@ -95,7 +134,7 @@ local function getJSONData(url)
         assert(handle:close(), "curl error - could not close connection")
         return result
     else -- assume a non-Windows OS, use os.execute instead of io.popen
-        local tempFilePath = app.fs.tempPath .. "palettedata.tmp"
+        local tempFilePath = app.fs.joinPath(app.fs.tempPath, "palettedata.tmp")
         -- execute curl, redirect output to a temporary file
         os.execute(command .. " > " .. tempFilePath)
         local file = io.open(tempFilePath, "r")
@@ -114,7 +153,7 @@ end
 
 local function main()
     -- check if there's an active sprite (can't run this without a sprite, but just in case...)
-    if not app.activeSprite then
+    if not app.sprite then
         app.alert {
             title = "No Active Sprite!",
             text = "Please open a sprite or create a new one"
@@ -136,6 +175,7 @@ local function main()
         local rawName = namePromptDlg.data.rawName
         local paletteName = sluggify.sluggify(rawName)
 
+        -- show a warning dialog if the palette name is empty
         if paletteName == nil or paletteName == "" then
             local invalidInputDlg = Dialog("Invalid Palette Name")
                 :label { text = "Palette names may only contain the following characters:" }
@@ -238,15 +278,17 @@ local function main()
                 end
             palettePreviewDlg
                 :separator()
+                :label { text = "Palette save format:" }
+                :radio { id = "gpl", text = "*.gpl (default)", selected = true }
+                :radio { id = "aseprite", text = "*.aseprite" }
+                :newrow()
+                :button { text = "Set save location...", onclick = setSavePath }
+                :separator()
                 :button { id="saveAndUse", text="Save and use now", focus = true}
                 :button { id = "use", text = "Use now, don't save" }
                 :newrow()
                 :button { id = "save", text = "Save as preset" }
                 :button { id = "cancel", text = "Cancel" }
-                :separator()
-                :label { text = "Palette save format:" }
-                :radio { id = "gpl", text = "*.gpl (default)", selected = true }
-                :radio { id = "aseprite", text = "*.aseprite" }
                 :show()
 
             local paletteExtension
@@ -257,7 +299,9 @@ local function main()
             end
 
             local ps = app.fs.pathSeparator
-            local savePath = app.fs.userConfigPath .. "palettes" .. ps .. name .. paletteExtension
+            local savePath = app.fs.joinPath(
+                preferences.paletteSavePath, name .. paletteExtension
+            )
 
             -- save and use: save the palette as a preset and update the current sprite's palette
             if palettePreviewDlg.data.saveAndUse then
@@ -290,10 +334,13 @@ end
 -- Aseprite plugin API stuff...
 ---@diagnostic disable-next-line: lowercase-global
 function init(plugin) -- initialize extension
-    -- if plugin.preferences.count == nil then
-    --     plugin.preferences.count = 0
-    -- end
+    preferences = plugin.preferences -- update preferences global with plugin.preferences values
+    -- if the user hasn't configured a custom path for saved palettes, use the default
+    if preferences.paletteSavePath == nil then
+        preferences.paletteSavePath = defaultSavePath
+    end
 
+    -- add "Import Palette from Lospec" command to palette options menu
     plugin:newCommand {
         id = "importFromLospec",
         title = "Import Palette from Lospec",
@@ -304,6 +351,6 @@ end
 
 ---@diagnostic disable-next-line: lowercase-global
 function exit(plugin)
-    -- no cleanup
+    plugin.preferences = preferences -- save preferences
     return nil
 end
