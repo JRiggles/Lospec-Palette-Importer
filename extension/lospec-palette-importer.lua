@@ -19,18 +19,6 @@ local sluggify = require("sluggify") -- used to convert user input into valid UR
 local preferences = {} -- create a global table to store extension preferences
 local defaultSavePath = app.fs.joinPath(app.fs.userConfigPath, "palettes")
 
-local function isDirectory(path)
-    -- return true if path exists and is a directory, false otherwise
-    local file = io.open(path, "r")
-    if file then
-        local isDir = file:read("*a") == nil
-        file:close()
-        return isDir
-    else
-        return false
-    end
-end
-
 local function setSavePath()
     -- allow the user to set a custom path for saved palettes (or restore the default path)
     local setPathDlg = Dialog("Enter Path for Saved Palettes")
@@ -45,7 +33,7 @@ local function setSavePath()
         :show()
 
     local newPath = setPathDlg.data.savePathOverride
-    if isDirectory(newPath) then
+    if app.fs.isDirectory(newPath) then
         preferences.paletteSavePath = newPath
     else
         app.alert {

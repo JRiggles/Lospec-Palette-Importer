@@ -1,11 +1,12 @@
 # Lospec Palette Importer
 
 #### An Aseprite extension
-*current release: [v1.2.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.2.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
 - You can now set a custom path for saved palettes. Once you've updated this, the change will persist until you change it again or reset it to the default path.
 > Thanks to Lospec Discord user @Emad for the idea / feature request!
+- HOTFIX v.1.2.1 fixes an issue on Windows where any custom palette save dir was considered invalid
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
