@@ -1,12 +1,14 @@
 # Lospec Palette Importer
 
 #### An Aseprite extension
-*current release: [v1.2.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.3.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
-- You can now set a custom path for saved palettes. Once you've updated this, the change will persist until you change it again or reset it to the default path.
-> Thanks to Lospec Discord user @Emad for the idea / feature request!
-- HOTFIX v.1.2.1 fixes an issue on Windows where any custom palette save dir was considered invalid
+- You can now click on the "Open In App..." button on [Lospec](https://lospec.com) and it will automatically bring up the Palette Preview dialog
+  - Caveat: If Aseprite is already running when you click "Open In App...", **the importer won't open** - this seems like a limitation of the Aseprite CLI, but I'm looking for a workaround! For now, just quit Aseprite first.
+  - If "Open In App..." isn't working after you update the extension, try rebooting. The `lospec-palette://` URI handler needs to be registered with your OS, and a reboot usually takes care of that.
+  - Because of how Mac OS deals with URI handlers, Lospec Palette Importer relies on a small hepler app (bundled with the extension) which you may need to grant some permissions/access - just follow the on-screen prompts &hearts;
+> Thanks to Lospec Discord user @PureAsbestos for the idea / feature request!
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
