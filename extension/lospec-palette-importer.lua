@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
--- stop complaining about unknow Aseprite API methods
+-- stop complaining about unknown Aseprite API methods
 ---@diagnostic disable: undefined-global
 -- ignore dialogs which are defined with local names for readablity, but may be unused
 ---@diagnostic disable: unused-local
@@ -156,11 +156,22 @@ local function main()
         :label { text = "Palette names are case-insenstitive" }
         :button { id = "ok", text = "OK" }
         :button { id = "cancel", text = "Cancel" }
-        :show()
+    if not app.params["fromURI"] then
+        namePromptDlg:show()
+    end
 
-    if namePromptDlg.data.ok then
+    if namePromptDlg.data.ok or app.params["fromURI"] then
         -- get the palette name from the user, sanitized to remove invalid characters
-        local rawName = namePromptDlg.data.rawName
+        local rawName = ""
+        if not app.params["fromURI"] then
+            -- rawName is coming from the user prompt
+            rawName = namePromptDlg.data.rawName
+        else
+            -- get palettes slug from URI passed in by CLI call
+            rawName = app.params["fromURI"]
+            -- strip off URI protocol prefix
+            rawName = rawName:sub(#"lospec-palette://" + 1)
+        end
         local paletteName = sluggify.sluggify(rawName)
 
         -- show a warning dialog if the palette name is empty
@@ -182,10 +193,8 @@ local function main()
 
         -- construct URL for the Lospec API
         local url = "https://lospec.com/palette-list/" .. paletteName .. ".json"
-
         -- fetch JSON data from Lospec
         local data = getJSONData(url)
-
         -- parse JSON response
         local paletteData = assert(
             json.decode(data),
