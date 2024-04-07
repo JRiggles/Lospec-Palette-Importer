@@ -115,7 +115,7 @@ end
 
 local function getJSONData(url)
     local command = 'curl -s "' .. url .. '"'
-    if getOS == "Windows" then
+    if getOS() == "Windows" then
         -- fetch JSON data via curl using io.popen
         local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
         local result = handle:read("*a")
@@ -139,7 +139,61 @@ local function getJSONData(url)
     end
 end
 
+local function WindowsRegQuery()
+    local key = [[HKEY_CLASSES_ROOT\lospec-palette]] -- load URI handler into registry
+    local handle = assert(
+        io.popen('reg query ' .. key .. ' /v "URL Protocol"'),
+        "Error checking registry for URI handler"
+    )
+    local regQuery = handle:read("*a")
+    handle:close()
+    return regQuery
+end
+
+local function URIregistryCheck()
+    if preferences.suppressURIRegAlert == true then
+        return
+    end
+    local query = WindowsRegQuery()
+    if query == nil or query == "" then
+        local regPermissionDlg = Dialog("lospec.com URI Handler Not Registered")
+            :label { text = "Your permission is required in order to allow Lospec Palette " }
+            :newrow()
+            :label { text = "Importer to handle \"Open In App...\" links from lospec.com." }
+            :newrow()
+            :label { text = "Please click \"OK\", then click \"Yes\" on the Windows UAC prompt." }
+            :button { id = "ok", text = "OK" }
+            :button { id = "cancel", text = "Cancel" }
+            :separator()
+            :check { id = "notagain", text = "Don't show this again" }
+            :show()
+
+        if regPermissionDlg.data.notagain then
+            preferences.suppressURIRegAlert = true
+        end
+
+        if regPermissionDlg.data.ok then -- permission granted, update registry
+            os.execute( "regedit /s \"%appdata%\\Aseprite\\extensions\\lospec-palette-importer\\WindowsHelper\\RegisterURIHandler.reg\"" )
+            -- confirm initial URI handler registration
+            query = WindowsRegQuery()
+            if query == nil or query == "" then
+                app.alert("An error occurred while registering the lospec.com URI handler. Please try again.")
+            else
+                app.alert("lospec.com URI handler registered successfully!")
+                preferences.suppressURIRegAlert = true
+            end
+        end
+
+    else
+        return -- nothing to do
+    end
+end
+
 local function main()
+    if getOS() == "Windows" then
+        URIregistryCheck() -- check for URI handler in registry (Windows only)
+    end
+
     -- check if there's an active sprite (can't run this without a sprite, but just in case...)
     if not app.sprite then
         app.alert {
@@ -325,6 +379,7 @@ local function main()
             end
         end
     app.command.Refresh() -- refresh to load any changes to the palette list
+    app.params.fromURI = nil -- reset URI input storage so manual import can be used again
     end
 end
 
@@ -335,6 +390,10 @@ function init(plugin) -- initialize extension
     -- if the user hasn't configured a custom path for saved palettes, use the default
     if preferences.paletteSavePath == nil then
         preferences.paletteSavePath = defaultSavePath
+    end
+
+    if preferences.suppressURIRegAlert == nil then
+        preferences.suppressURIRegAlert = false
     end
 
     -- add "Import Palette from Lospec" command to palette options menu
@@ -349,5 +408,7 @@ end
 ---@diagnostic disable-next-line: lowercase-global
 function exit(plugin)
     plugin.preferences = preferences -- save preferences
+    -- this is handled in main() also - it's here JIC
+    app.params.fromURI = nil -- reset URI input storage so manual import can be used again
     return nil
 end
