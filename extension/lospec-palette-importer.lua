@@ -296,7 +296,7 @@ local function main()
             local palettePreviewDlg = Dialog("Lospec Importer - Palette Preview")
                 :label { text = '"' .. name .. '" by ' .. author .. ", " .. ncolors .. " colors" }
                 :newrow()
-            palettePreviewDlg:entry {  -- NOTE: specifying palettePreviewDlg is necessary here
+            palettePreviewDlg:entry { -- NOTE: specifying palettePreviewDlg is necessary here
                 id = "urlPreview",
                 text = lospecUrl,
                 -- set the text back to the URL on change, making this "read-only" but copyable
@@ -341,15 +341,14 @@ local function main()
                 :button { id = "save", text = "Save as preset" }
                 :button { id = "cancel", text = "Cancel" }
                 :show()
-
-            local paletteExtension
+            -- set palette file extension
+            local paletteExtension = ""
             if palettePreviewDlg.data.gpl then
                 paletteExtension = ".gpl"
             elseif palettePreviewDlg.data.aseprite then
                 paletteExtension = ".aseprite"
             end
 
-            local ps = app.fs.pathSeparator
             local savePath = app.fs.joinPath(
                 preferences.paletteSavePath, name .. paletteExtension
             )
