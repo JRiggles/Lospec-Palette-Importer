@@ -139,6 +139,12 @@ local function getJSONData(url)
     end
 end
 
+local function getDaily()
+    -- get the Lospec daily palette name
+    ---@type string
+    return getJSONData([[https://lospec.com/palette-list/current-daily-palette.txt]])
+end
+
 local function WindowsRegQuery()
     local key = [[HKEY_CLASSES_ROOT\lospec-palette]] -- load URI handler into registry
     local handle = assert(
@@ -206,6 +212,8 @@ local function main()
     local namePromptDlg = Dialog("Import Palette from Lospec")
         :label { text = "Palette name (or Lospec URL slug):"}
         :entry { id = "rawName", focus = true}
+        :newrow()
+        :button { id = "daily", text = "Get Daily Palette" }
         :separator()
         :label { text = "Palette names are case-insenstitive" }
         :button { id = "ok", text = "OK" }
@@ -214,13 +222,15 @@ local function main()
         namePromptDlg:show()
     end
 
-    if namePromptDlg.data.ok or app.params["fromURI"] then
+    if namePromptDlg.data.ok or namePromptDlg.data.daily or app.params["fromURI"] then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = ""
-        if not app.params["fromURI"] then
+        if not namePromptDlg.data.daily and not app.params["fromURI"] then
             -- rawName is coming from the user prompt
             rawName = namePromptDlg.data.rawName
-        else
+        elseif namePromptDlg.data.daily then
+            rawName = getDaily()
+        elseif app.params["fromURI"] then
             -- get palettes slug from URI passed in by CLI call
             rawName = app.params["fromURI"]
             -- strip off URI protocol prefix
