@@ -113,10 +113,10 @@ local function getOS()
     return package.config:sub(1, 1) == "\\" and "Windows" or "Unix"
 end
 
-local function getJSONData(url)
+local function getLospecData(url)
     local command = 'curl -s "' .. url .. '"'
     if getOS() == "Windows" then
-        -- fetch JSON data via curl using io.popen
+        -- fetch data via curl using io.popen
         local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
         local result = handle:read("*a")
         assert(handle:close(), "curl error - could not close connection")
@@ -142,7 +142,7 @@ end
 local function getDaily()
     -- get the Lospec daily palette name
     ---@type string
-    return getJSONData([[https://lospec.com/palette-list/current-daily-palette.txt]])
+    return getLospecData([[https://lospec.com/palette-list/current-daily-palette.txt]])
 end
 
 local function WindowsRegQuery()
@@ -258,7 +258,7 @@ local function main()
         -- construct URL for the Lospec API
         local url = "https://lospec.com/palette-list/" .. paletteName .. ".json"
         -- fetch JSON data from Lospec
-        local data = getJSONData(url)
+        local data = getLospecData(url)
         -- parse JSON response
         local paletteData = assert(
             json.decode(data),
