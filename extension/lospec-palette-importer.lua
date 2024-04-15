@@ -114,7 +114,7 @@ local function getOS()
 end
 
 local function getLospecData(url)
-    local command = 'curl -s "' .. url .. '"'
+    local command = 'curl -Ls "' .. url .. '"'
     if getOS() == "Windows" then
         -- fetch data via curl using io.popen
         local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
@@ -214,6 +214,8 @@ local function main()
         :entry { id = "rawName", focus = true}
         :newrow()
         :button { id = "daily", text = "Get Daily Palette" }
+        :newrow()
+        :button { id = "random", text = "Get Random Palette" }
         :separator()
         :label { text = "Palette names are case-insenstitive" }
         :button { id = "ok", text = "OK" }
@@ -222,7 +224,8 @@ local function main()
         namePromptDlg:show()
     end
 
-    if namePromptDlg.data.ok or namePromptDlg.data.daily or app.params["fromURI"] then
+    if (namePromptDlg.data.ok or namePromptDlg.data.daily or
+        namePromptDlg.data.random or app.params["fromURI"]) then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = ""
         if not namePromptDlg.data.daily and not app.params["fromURI"] then
@@ -239,7 +242,7 @@ local function main()
         local paletteName = sluggify.sluggify(rawName)
 
         -- show a warning dialog if the palette name is empty
-        if paletteName == nil or paletteName == "" then
+        if not namePromptDlg.data.random and (paletteName == nil or paletteName == "") then
             local invalidInputDlg = Dialog("Invalid Palette Name")
                 :label { text = "Palette names may only contain the following characters:" }
                 :newrow()
@@ -256,7 +259,12 @@ local function main()
         end
 
         -- construct URL for the Lospec API
-        local url = "https://lospec.com/palette-list/" .. paletteName .. ".json"
+        local url = ""
+        if namePromptDlg.data.random then
+            url = "https://lospec.com/palette-list/random.json"
+        else
+            url = "https://lospec.com/palette-list/" .. paletteName .. ".json"
+        end
         -- fetch JSON data from Lospec
         local data = getLospecData(url)
         -- parse JSON response
