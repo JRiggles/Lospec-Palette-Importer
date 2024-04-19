@@ -311,6 +311,12 @@ local function main()
             -- remove file extension from url so it can be shown in the preview dialog below
             local lospecUrl = url:gsub("%.json$", "")
 
+            -- random palettes come from "https://lospec.com/palette-list/random", so "random"
+            -- should be replaced with the palette's actual name
+            if namePromptDlg.data.random then
+                lospecUrl = lospecUrl:gsub("%random", sluggify.sluggify(name))
+            end
+
             local palettePreviewDlg = Dialog("Lospec Importer - Palette Preview")
                 :label { text = '"' .. name .. '" by ' .. author .. ", " .. ncolors .. " colors" }
                 :newrow()
