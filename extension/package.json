@@ -2,17 +2,19 @@
     "name": "lospec-palette-importer",
     "displayName": "Lospec Palette Importer",
     "description": "Import Palettes from Lospec.com",
-    "version": "1.3.0-beta",
-    "author": { "name": "John Riggles",
-                "email": "jriggles@icloud.com",
-                "url": "https://jriggl.es/" },
+    "version": "1.3.0",
+    "author": {
+        "name": "John Riggles",
+        "email": "jriggles@icloud.com",
+        "url": "https://jriggl.es/"
+    },
     "contributors": [ ],
     "publisher": "sudo_whoami",
     "license": "MIT",
     "categories": [ "Scripts" ],
     "contributes": {
-      "scripts": [
-          { "path": "./lospec-palette-importer.lua" }
-      ]
+        "scripts": [
+            { "path": "./lospec-palette-importer.lua" }
+        ]
     }
-  }
+}
