@@ -7,7 +7,7 @@
 - You can now click on the "Open In App..." button on [Lospec](https://lospec.com) and it will automatically bring up the Palette Preview dialog
   - Caveat: clicking "Open In App...", will open a new instance of Aseprite every time - this seems like a limitation of the Aseprite CLI, but I'm looking for a workaround!.
   - If "Open In App..." isn't working after you update the extension, try rebooting. The `lospec-palette://` URI handler needs to be registered with your OS, and a reboot usually takes care of that.
-  - Because of how Mac OS deals with URI handlers, Lospec Palette Importer relies on a small hepler app (bundled with the extension) which you may need to grant automation permissions/access - just follow the on-screen prompts &hearts; (you can find the relevant toggle in "System Settings/Privacy & Security/Automation" under "Lospec Palette Iporter")
+  - Because of how Mac OS deals with URI handlers, Lospec Palette Importer relies on a small helper app (bundled with the extension) which you may need to grant automation permissions/access - just follow the on-screen prompts &hearts; (you can find the relevant toggle in "System Settings/Privacy & Security/Automation" under "Lospec Palette Importer")
 > Thanks to Lospec Discord user @PureAsbestos for the idea / feature request!
 
 ##
