@@ -71,7 +71,7 @@ local letters = { -- mapping of replacement characters
 
 local function replaceAccents(str)
     local normalizedString = '' -- declare an empty string to store the normalized output
-    for _, char in utf8.codes(str) do -- convert the strign into constituent utf8 bytes
+    for _, char in utf8.codes(str) do -- convert the string into constituent utf8 bytes
         local replaced = false
         for accentChars, replacementChar in pairs(letters) do -- for each set of accented chars and their corresponding replacement...
             for _, accent in utf8.codes(accentChars) do -- get the utf8 code for the given accent char
