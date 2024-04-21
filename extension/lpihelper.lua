@@ -1,3 +1,6 @@
+-- 'lpihelper' middleware is used to trigger the 'importFromLospec' command, since extensions can't
+-- be run from the CLI, but scripts can
+
 -- stop complaining about unknown Aseprite API methods
 ---@diagnostic disable: undefined-global
 
