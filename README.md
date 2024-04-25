@@ -11,7 +11,7 @@
 > Thanks to Lospec Discord user @PureAsbestos for the idea / feature request!
 
 - Patch 1.3.1 fixes an issue on Windows where the extension could sometimes fail to find Aseprite.exe, which it needs in order for the URI handler to work
-> Thanks to Lospec Discord user @Fabico for the inspiration behind this fi
+> Thanks to Lospec Discord user @Fabico for the inspiration behind this fix
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
