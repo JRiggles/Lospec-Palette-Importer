@@ -14,14 +14,17 @@ jobs:
     - name: Auto Assign Issues/PRs
       uses: wow-actions/auto-assign@v3.0.2
       with:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # Replace with your secret token
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
         addReviewers: true
         addAssignees: true
         reviewers: JRiggles
         assignees: JRiggles
-        numberOfReviewers: 0
-        numberOfAssignees: 0
+        numberOfReviewers: 1
+        numberOfAssignees: 1
         skipKeywords: wip, draft
         skipDraft: true
-        includeLabels:
-        excludeLabels:
+        includeLabels: 
+        excludeLabels: 
+    - name: Debug Assignees
+      run: echo "Assignees: ${{ steps.auto-assign.outputs.assignees }}"
+      
