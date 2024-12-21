@@ -1,15 +1,27 @@
-name: Auto Assign Issues
+name: Auto Assign Issues/PRs
 
 on:
   issues:
-    types: [opened]
+    types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled]
 
 jobs:
   assign:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Assign issue to creator
-      uses: actions-ecosystem/action-add-issue-assigner@v1
+    - name: Auto Assign Issues/PRs
+      uses: wow-actions/auto-assign@v3.0.2
       with:
-        assignees: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # Replace with your secret token
+        addReviewers: true
+        addAssignees: true
+        reviewers: JRigles
+        assignees: JRiggles
+        numberOfReviewers: 0
+        numberOfAssignees: 0
+        skipKeywords: wip, draft
+        skipDraft: true
+        # includeLabels:
+        # excludeLabels:
