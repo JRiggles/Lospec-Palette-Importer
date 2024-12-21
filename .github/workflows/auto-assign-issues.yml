@@ -24,7 +24,5 @@ jobs:
         skipKeywords: wip, draft
         skipDraft: true
         includeLabels: 
-        excludeLabels: 
-    - name: Debug Assignees
-      run: echo "Assignees: ${{ steps.auto-assign.outputs.assignees }}"
+        excludeLabels:
       
