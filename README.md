@@ -1,5 +1,7 @@
 # Lospec Palette Importer
 
+<img scr="./screenshots/LPI icon.png"></img>
+
 #### An Aseprite extension
 *current release: [v1.3.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
