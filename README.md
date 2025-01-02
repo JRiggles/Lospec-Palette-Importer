@@ -1,6 +1,6 @@
 # Lospec Palette Importer
 
-<img scr="./screenshots/LPI icon.png"></img>
+![LPI icon](./screenshots/LPI%20icon.png)
 
 #### An Aseprite extension
 *current release: [v1.3.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
@@ -18,9 +18,9 @@
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
-<img src="./screenshots/import dialog.png"></img>
+![import dialog](./screenshots/import%20dialog.png)
 
-<img src="./screenshots/palette preview dialog.png"></img>
+![preview dialog](./screenshots/palette%20preview%20dialog.png)
 
 ## Requirements
 
@@ -33,7 +33,7 @@ When you run this plugin for the first time, you'll be aked to grant some permis
 
 When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access" (you'll only need to do this once)
 
-<img src="./screenshots/security dialog.png"></img>
+![security dialog](./screenshots/security%20dialog.png)
 
 ## Features & Usage
 Once you've imported the palette you want, you can...
@@ -47,7 +47,7 @@ Palettes can also be saved in *.aseprite format, but this option won't include a
 
 To use this plugin, just open the "Options" menu above the color palette and then select "Import Palette from Lospec"
 
-<img src="./screenshots/palette menu selection.png"></img>
+![palette menu](./screenshots/palette%20menu%20selection.png)
 
 ## Installation
 You can download this extension from [itch.io](https://sudo-whoami.itch.io/lospec-palette-importer) as a "pay what you want" tool
