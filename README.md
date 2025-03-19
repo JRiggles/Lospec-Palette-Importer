@@ -3,30 +3,31 @@
 ![LPI icon](./screenshots/LPI%20icon.png)
 
 #### An Aseprite extension
-*current release: [v1.3.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.4.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
-- You can now click on the "Open In App..." button on [Lospec](https://lospec.com) and it will automatically bring up the Palette Preview dialog
-  - Caveat: clicking "Open In App...", will open a new instance of Aseprite every time - this seems like a limitation of the Aseprite CLI, but I'm looking for a workaround!.
-  - If "Open In App..." isn't working after you update the extension, try rebooting. The `lospec-palette://` URI handler needs to be registered with your OS, and a reboot usually takes care of that.
-  - Because of how Mac OS deals with URI handlers, Lospec Palette Importer relies on a small helper app (bundled with the extension) which you may need to grant automation permissions/access - just follow the on-screen prompts &hearts; (you can find the relevant toggle in "System Settings/Privacy & Security/Automation" under "Lospec Palette Importer")
-> Thanks to Lospec Discord user @PureAsbestos for the idea / feature request!
+- Version 1.4.0 brings some quality-of-life improvements to the extension's UI/UX. Preferences can now be accessed by clicking the "Preferences..." button on the import dialog.
 
-- Patch 1.3.1 fixes an issue on Windows where the extension could sometimes fail to find Aseprite.exe, which it needs in order for the URI handler to work
-> Thanks to Lospec Discord user @Fabico for the inspiration behind this fix
+>[!IMPORTANT]
+>The minimum reqired Aseprite version is now 1.3.7 (API version 28)
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
+### Import
 ![import dialog](./screenshots/import%20dialog.png)
 
+### Palette Preview
 ![preview dialog](./screenshots/palette%20preview%20dialog.png)
+
+### Preferences
+![preferences dialog](./screenshots/prefs%20dialog.png)
 
 ## Requirements
 
 This extension has been tested on both Windows and Mac OS (specifically, Windows 11 and Mac OS Sonoma 14.3.1)
 
-It is intended to run on Aseprite version 1.3 or later and requires API version 1.3-rc5 (as long as you have the latest version of Aseprite, you should be fine!)
+It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
 When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command. Addtionally, this extension will need your permission to write files if you intend to save any imported palettes.

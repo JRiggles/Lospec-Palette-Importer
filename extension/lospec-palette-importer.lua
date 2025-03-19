@@ -1,6 +1,6 @@
 --[[
 MIT LICENSE
-Copyright © 2024 John Riggles [sudo_whoami]
+Copyright © 2024-25 John Riggles [sudo_whoami]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -19,21 +19,38 @@ local sluggify = require("sluggify") -- used to convert user input into valid UR
 local preferences = {} -- create a global table to store extension preferences
 local defaultSavePath = app.fs.joinPath(app.fs.userConfigPath, "palettes")
 
-local function setSavePath()
+local function setPrefs()
     -- allow the user to set a custom path for saved palettes (or restore the default path)
-    local setPathDlg = Dialog("Enter Path for Saved Palettes")
-        :entry { id = "savePathOverride", text = preferences.paletteSavePath }
-        setPathDlg:button {
+    local setPrefsDlg = Dialog("LPI Preferences")
+        :label { text = "Save Palettes To:" }
+        :entry { id = "savePathOverride", text = preferences.paletteSavePath, focus = false }
+        setPrefsDlg:button {
             text = "Reset to Default",
             onclick = function ()
-                setPathDlg:modify { id = "savePathOverride", text = defaultSavePath }
+                setPrefsDlg:modify { id = "savePathOverride", text = defaultSavePath }
             end
         }
-        :button { text = "Use This Path", focus = true }
+        :separator()
+        -- allow the user to select their preferred palette format
+        :label { text = "Save Palettes As:" }
+        :radio {
+            id = "gpl",
+            text = "*.gpl (recommended)",
+            selected = (preferences.paletteFormat == ".gpl")
+        }
+        :radio {
+            id = "aseprite",
+            text = "*.aseprite",
+            selected = (preferences.paletteFormat == ".aseprite")
+        }
+        :button { id = "ok", text = "OK", onclick = main }
         :show()
 
-    local newPath = setPathDlg.data.savePathOverride
+    -- save palette format preference
+    preferences.paletteFormat = setPrefsDlg.data.gpl and ".gpl" or ".aseprite"
+    local newPath = setPrefsDlg.data.savePathOverride
     if app.fs.isDirectory(newPath) then
+        -- save the new path to the preferences if it's a valid directory
         preferences.paletteSavePath = newPath
     else
         app.alert {
@@ -61,13 +78,13 @@ local function jsonToColorTable(hexTable)
 end
 
 local function setPaletteAsCurrent(palette)
-    -- set the give 'palette' as the current palette for the active sprite
+    -- set the given 'palette' as the current palette for the active sprite
     app.activeSprite:setPalette(palette)
     app.refresh()
 end
 
 local function checkOverwrite(savePath)
-    -- check if the palette at 'savePath' exists and warn the user if if would be replaced
+    -- check if the palette at 'savePath' exists and warn the user if it would be replaced
     local exists = app.fs.isFile(savePath)
     if exists then
         local paletteExistsWarningDlg = Dialog("This Palette Already Exists!")
@@ -96,7 +113,7 @@ local function writeGplFile(savePath, name, author, url, colors)
     gplFile:write("#" .. #colors .. " colors", "\n")
     gplFile:write(
         "#Imported into Aseprite via \"Lospec Palette Importer\"",
-        " - (C)2024 J. Riggles [sudo_whoami] - MIT LICENSE",
+        " - (C)2024-25 J. Riggles [sudo_whoami] - MIT LICENSE",
         "\n"
     )
     -- write each color to the gpl file as rgb values with the hex code as a comment
@@ -109,13 +126,9 @@ local function writeGplFile(savePath, name, author, url, colors)
     gplFile:close()
 end
 
-local function getOS()
-    return package.config:sub(1, 1) == "\\" and "Windows" or "Unix"
-end
-
 local function getLospecData(url)
     local command = 'curl -Ls "' .. url .. '"'
-    if getOS() == "Windows" then
+    if app.os.windows then
         -- fetch data via curl using io.popen
         local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
         local result = handle:read("*a")
@@ -196,7 +209,15 @@ local function URIregistryCheck()
 end
 
 local function main()
-    if getOS() == "Windows" then
+    if app.apiVersion < 28 then  -- API v28 is required for app.os calls
+        app.alert{
+            title = "Lospec Palette Importer",
+            text = "This extension requires Aseprite version 1.3.7 (API version 28) or higher. Please update Aseprite to use this extension."
+        }
+        return
+    end
+
+    if app.os.windows then
         URIregistryCheck() -- check for URI handler in registry (Windows only)
     end
 
@@ -210,14 +231,15 @@ local function main()
     end
 
     local namePromptDlg = Dialog("Import Palette from Lospec")
-        :label { text = "Palette name (or Lospec URL slug):"}
+        :label { text = "Palette name or Lospec URL slug (case-insenstitive):" }
         :entry { id = "rawName", focus = true}
         :newrow()
         :button { id = "daily", text = "Get Daily Palette" }
         :newrow()
         :button { id = "random", text = "Get Random Palette" }
         :separator()
-        :label { text = "Palette names are case-insenstitive" }
+        :button { id = "prefs", text = "Preferences...", onclick = setPrefs }
+        :separator()
         :button { id = "ok", text = "OK" }
         :button { id = "cancel", text = "Cancel" }
     if not app.params["fromURI"] then
@@ -234,7 +256,7 @@ local function main()
         elseif namePromptDlg.data.daily then
             rawName = getDaily()
         elseif app.params["fromURI"] then
-            if getOS() == "Windows" and os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath then
+            if app.os.windows and os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath then
                 -- add ASEPRITE_EXECUTABLE environment variable containing path to Aseprite.exe
                 -- (used by URIHelper.cmd for Aseprite CLI access)
                 local set = string.format('setx %s "%s"', "ASEPRITE_EXECUTABLE", app.fs.appPath)
@@ -323,7 +345,7 @@ local function main()
                 lospecUrl = lospecUrl:gsub("%random", sluggify.sluggify(name))
             end
 
-            local palettePreviewDlg = Dialog("Lospec Importer - Palette Preview")
+            local palettePreviewDlg = Dialog("Lospec Palette Importer - Preview")
                 :label { text = '"' .. name .. '" by ' .. author .. ", " .. ncolors .. " colors" }
                 :newrow()
             palettePreviewDlg:entry { -- NOTE: specifying palettePreviewDlg is necessary here
@@ -359,36 +381,24 @@ local function main()
                 end
             palettePreviewDlg
                 :separator()
-                :label { text = "Palette save format:" }
-                :radio { id = "gpl", text = "*.gpl (default)", selected = true }
-                :radio { id = "aseprite", text = "*.aseprite" }
-                :newrow()
-                :button { text = "Set save location...", onclick = setSavePath }
-                :separator()
                 :button { id="saveAndUse", text="Save and use now", focus = true}
                 :button { id = "use", text = "Use now, don't save" }
                 :newrow()
                 :button { id = "save", text = "Save as preset" }
                 :button { id = "cancel", text = "Cancel" }
                 :show()
-            -- set palette file extension
-            local paletteExtension = ""
-            if palettePreviewDlg.data.gpl then
-                paletteExtension = ".gpl"
-            elseif palettePreviewDlg.data.aseprite then
-                paletteExtension = ".aseprite"
-            end
 
             local savePath = app.fs.joinPath(
-                preferences.paletteSavePath, name .. paletteExtension
+                preferences.paletteSavePath, name .. preferences.paletteFormat
             )
 
             -- save and use: save the palette as a preset and update the current sprite's palette
             if palettePreviewDlg.data.saveAndUse then
                 if checkOverwrite(savePath) then
-                    if palettePreviewDlg.data.gpl then
+                    print(preferences.paletteFormat)
+                    if preferences.paletteFormat == ".gpl" then
                         writeGplFile(savePath, name, author, lospecUrl, colors)
-                    elseif palettePreviewDlg.data.aseprite then
+                    elseif preferences.paletteFormat == ".aseprite" then
                         palette:saveAs(savePath)
                     end
                 end
@@ -419,6 +429,10 @@ function init(plugin) -- initialize extension
     -- if the user hasn't configured a custom path for saved palettes, use the default
     if preferences.paletteSavePath == nil then
         preferences.paletteSavePath = defaultSavePath
+    end
+    -- if the user hasn't specified a preferred palette format, use the default (*.gpl)
+    if preferences.paletteFormat == nil then
+        preferences.paletteFormat = ".gpl"
     end
 
     if preferences.suppressURIRegAlert == nil then
