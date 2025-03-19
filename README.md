@@ -9,7 +9,7 @@
 - Version 1.4.0 brings some quality-of-life improvements to the extension's UI/UX. Preferences can now be accessed by clicking the "Preferences..." button on the import dialog.
 
 >[!IMPORTANT]
->The minimum reqired Aseprite version is now 1.3.7 (API version 28)
+>The minimum required Aseprite version is now 1.3.7 (API version 28)
 
 ##
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
