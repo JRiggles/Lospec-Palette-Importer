@@ -52,8 +52,8 @@ Palettes can also be saved in *.aseprite format, but this option won't include a
 
 To use this plugin, just open the "Options" menu above the color palette and then select "Import Palette from Lospec"
 
->[!HINT]
->If a palette you've just imported doesn't show up in the palette list immediately, just click the refresh button in the upper-right corner
+>[!TIP]
+>If a palette you've just imported doesn't show up in the palette list immediately, just click the refresh button in the upper-right corner of the list
 
 ![palette menu](./screenshots/palette%20menu%20selection.png)
 
