@@ -3,10 +3,14 @@
 ![LPI icon](./screenshots/LPI%20icon.png)
 
 #### An Aseprite extension
-*current release: [v1.4.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.4.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
-- Version 1.4.0 brings some quality-of-life improvements to the extension's UI/UX. Preferences can now be accessed by clicking the "Preferences..." button on the import dialog.
+Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅
+- Fix issues with the "Save as preset" and "Save and use now" options not actually saving palettes
+- Remove a rogue `print` statement that somehow got left in the last build
+- Update how metadata for GPL palettes is formatted in order to deal with an Aseprite issue where palette info text won't show up
+    - **NOTE**: I'm not sure *what* is causing this bug, but I've tested the new format and any newly imported palettes shouldn't be affected. The relevant GitHub issue is [#5014](https://github.com/aseprite/aseprite/issues/5104)
 
 >[!IMPORTANT]
 >The minimum required Aseprite version is now 1.3.7 (API version 28)
@@ -47,6 +51,9 @@ Palettes are saved in GIMP palette format (*.gpl) by default since this option a
 Palettes can also be saved in *.aseprite format, but this option won't include any of the extra data from Lospec
 
 To use this plugin, just open the "Options" menu above the color palette and then select "Import Palette from Lospec"
+
+>[!HINT]
+>If a palette you've just imported doesn't show up in the palette list immediately, just click the refresh button in the upper-right corner
 
 ![palette menu](./screenshots/palette%20menu%20selection.png)
 

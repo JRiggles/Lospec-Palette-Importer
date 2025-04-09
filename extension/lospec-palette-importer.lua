@@ -109,13 +109,9 @@ local function writeGplFile(savePath, name, author, url, colors)
     gplFile:write("GIMP Palette", "\n")
     gplFile:write("#" .. name, "\n")
     gplFile:write("#Created by " .. author, "\n")
-    gplFile:write("#Lospec URL: " .. url, "\n")
     gplFile:write("#" .. #colors .. " colors", "\n")
-    gplFile:write(
-        "#Imported into Aseprite via \"Lospec Palette Importer\"",
-        " - (C)2024-25 J. Riggles [sudo_whoami] - MIT LICENSE",
-        "\n"
-    )
+    gplFile:write("#Imported with \"Lospec Palette Importer\"\n")
+    gplFile:write("#Lospec URL: " .. url, "\n")
     -- write each color to the gpl file as rgb values with the hex code as a comment
     for _, color in ipairs(colors) do
         local r = hexToColor(color).red
@@ -395,7 +391,6 @@ local function main()
             -- save and use: save the palette as a preset and update the current sprite's palette
             if palettePreviewDlg.data.saveAndUse then
                 if checkOverwrite(savePath) then
-                    print(preferences.paletteFormat)
                     if preferences.paletteFormat == ".gpl" then
                         writeGplFile(savePath, name, author, lospecUrl, colors)
                     elseif preferences.paletteFormat == ".aseprite" then
@@ -410,15 +405,14 @@ local function main()
 
             -- save: save the palettes as a preset, but retain the current sprite's palette
             elseif palettePreviewDlg.data.save then
-                if palettePreviewDlg.data.gpl then
+                if preferences.paletteFormat == ".gpl" then
                     writeGplFile(savePath, name, author, lospecUrl, colors)
-                elseif palettePreviewDlg.data.aseprite then
+                elseif preferences.paletteFormat == ".aseprite" then
                     palette:saveAs(savePath)
                 end
             end
         end
     app.command.Refresh() -- refresh to load any changes to the palette list
-    app.params.fromURI = nil -- reset URI input storage so manual import can be used again
     end
 end
 
@@ -451,7 +445,7 @@ end
 ---@diagnostic disable-next-line: lowercase-global
 function exit(plugin)
     plugin.preferences = preferences -- save preferences
-    -- this is handled in main() also - it's here JIC
     app.params.fromURI = nil -- reset URI input storage so manual import can be used again
+    app.refresh() -- refresh to load any changes to the palette list
     return nil
 end
