@@ -1,8 +1,11 @@
 # Lospec Palette Importer
+#### An Aseprite extension
 
 ![LPI icon](./screenshots/LPI%20icon.png)
 
-#### An Aseprite extension
+
+This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
+
 *current release: [v1.4.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
@@ -21,7 +24,6 @@ Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅 and i
 >The minimum required Aseprite version is now 1.3.7 (API version 28)
 
 ##
-This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
 ### Import
 ![import dialog](./screenshots/import%20dialog.png)
