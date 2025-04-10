@@ -6,9 +6,14 @@
 *current release: [v1.4.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
-Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅
+Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅 and improves a few other things...
 - Fix issues with the "Save as preset" and "Save and use now" options not actually saving palettes
 - Remove a rogue `print` statement that somehow got left in the last build
+- UI/UX improvements
+    - Improved layout of the import dialog
+    - "OK" on the import dialog is now "Import" because that makes more sense
+    - "Cancel" on the palette preview dialog is now "Back...", and clicking on it will return you to the import dialog. This way you can redo your search or "re-roll" your random palette (thanks to Lospec Discord user **@cptn.piranha** for the idea!)
+    - Closing the warning dialog that shows up after entering an empty or malformed palette name will now return to the import dialog instead of closing the extension altogether
 - Update how metadata for GPL palettes is formatted in order to deal with an Aseprite issue where palette info text won't show up
     - **NOTE**: I'm not sure *what* is causing this bug, but I've tested the new format and any newly imported palettes shouldn't be affected. The relevant GitHub issue is [#5014](https://github.com/aseprite/aseprite/issues/5104)
 
@@ -41,6 +46,8 @@ When prompted, select the "Give full trust to this script" checkbox and then cli
 ![security dialog](./screenshots/security%20dialog.png)
 
 ## Features & Usage
+If you know the name of the palette you want to import, simply enter it and click the **Import** button. If you're looking for inspiration, you can also check out the current **Daily** palette or a **Random** palette!
+
 Once you've imported the palette you want, you can...
 - Save it as a preset and use it immediately
 - Use it without saving

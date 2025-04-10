@@ -228,21 +228,21 @@ local function main()
 
     local namePromptDlg = Dialog("Import Palette from Lospec")
         :label { text = "Palette name or Lospec URL slug (case-insenstitive):" }
-        :entry { id = "rawName", focus = true}
+        :entry { id = "rawName", focus = true }
+        :button { id = "import", text = "Import" }
+        :separator()
         :newrow()
-        :button { id = "daily", text = "Get Daily Palette" }
-        :newrow()
-        :button { id = "random", text = "Get Random Palette" }
+        :button { id = "daily", text = "Get daily palette" }
+        :button { id = "random", text = "Get random palette" }
         :separator()
         :button { id = "prefs", text = "Preferences...", onclick = setPrefs }
-        :separator()
-        :button { id = "ok", text = "OK" }
         :button { id = "cancel", text = "Cancel" }
+        -- :separator()
     if not app.params["fromURI"] then
         namePromptDlg:show()
     end
 
-    if (namePromptDlg.data.ok or namePromptDlg.data.daily or
+    if (namePromptDlg.data.import or namePromptDlg.data.daily or
         namePromptDlg.data.random or app.params["fromURI"]) then
         -- get the palette name from the user, sanitized to remove invalid characters
         local rawName = ""
@@ -258,10 +258,8 @@ local function main()
                 local set = string.format('setx %s "%s"', "ASEPRITE_EXECUTABLE", app.fs.appPath)
                 os.execute(set)
             end
-            -- get palettes slug from URI passed in by CLI call
-            rawName = app.params["fromURI"]
-            -- strip off URI protocol prefix
-            rawName = rawName:sub(#"lospec-palette://" + 1)
+            -- get palette slug from URI passed in by CLI call, strip off URI protocol prefix
+            rawName = app.params["fromURI"]:sub(#"lospec-palette://" + 1)
         end
         local paletteName = sluggify.sluggify(rawName)
 
@@ -279,7 +277,7 @@ local function main()
                 :label { text = "  square brackets: [ and ] (these will be ignored)" }
                 :button { text = "OK" }
                 :show()
-            return -- bail
+            return main() -- go back to the name prompt dialog
         end
 
         -- construct URL for the Lospec API
@@ -318,7 +316,7 @@ local function main()
             -- get number of colors in palette
             local ncolors = #colors
 
-            -- setup fallback in case of missing author name
+            -- setup fall in case of missing author name
             if author == "" then
                 author = "an unspecified author"
             end
@@ -381,7 +379,15 @@ local function main()
                 :button { id = "use", text = "Use now, don't save" }
                 :newrow()
                 :button { id = "save", text = "Save as preset" }
-                :button { id = "cancel", text = "Cancel" }
+                :button {
+                    id = "back",
+                    text = "Back...",
+                    onclick = function()
+                        palettePreviewDlg:close()
+                        app.params.fromURI = nil -- reset stored URI input
+                        main() -- go back to the name prompt dialog
+                    end
+                }
                 :show()
 
             local savePath = app.fs.joinPath(
@@ -412,7 +418,8 @@ local function main()
                 end
             end
         end
-    app.command.Refresh() -- refresh to load any changes to the palette list
+        app.params.fromURI = nil -- reset URI input storage so manual import can be used again
+        app.command.Refresh() -- refresh to load any changes to the palette list
     end
 end
 
