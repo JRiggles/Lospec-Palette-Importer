@@ -3,7 +3,6 @@
 
 ![LPI icon](./screenshots/LPI%20icon.png)
 
-
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
 *current release: [v1.4.1](https://sudo-whoami.itch.io/lospec-palette-importer)*

@@ -252,7 +252,7 @@ local function main()
         elseif namePromptDlg.data.daily then
             rawName = getDaily()
         elseif app.params["fromURI"] then
-            if app.os.windows and os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath then
+            if app.os.windows and (os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath) then
                 -- add ASEPRITE_EXECUTABLE environment variable containing path to Aseprite.exe
                 -- (used by URIHelper.cmd for Aseprite CLI access)
                 local set = string.format('setx %s "%s"', "ASEPRITE_EXECUTABLE", app.fs.appPath)
