@@ -1,0 +1,3 @@
+The MacOS helper app for Lospec Palette Importer is used as the URI handler for lospec.com's "Open in App" feature (via https://lospec-palette URIs). It was built with [Platypus](https://sveinbjorn.org/files/manpages/PlatypusDocumentation.html).
+
+For detailed implementation of the URI handling, see the [URIHandler.sh](./URIHandler.sh) script. This script is bundled into the helper app as **"Lospec Palette Importer.app/Contents/Resources/script"** and is responsible for passing the URI data to the [lpihelper.lua](../lpihelper.lua) script, which in turn calls the Lospec Palette Importer extension via the Aseprite CLI.
