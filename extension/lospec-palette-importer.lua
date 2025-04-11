@@ -233,7 +233,7 @@ local function main()
         return -- bail
     end
 
-    local namePromptDlg = Dialog("Import Palette from Lospec")
+    local namePromptDlg = Dialog("Lospec Palette Importer")
         :label { text = "Palette name or Lospec URL slug (case-insenstitive):" }
         :entry { id = "rawName", focus = true }
         :button { id = "import", text = "Import" }
