@@ -1,5 +1,5 @@
 # Lospec Palette Importer
-#### An Aseprite extension
+### An Aseprite extension by [sudo whoami](https://sudo-whoami.itch.io)
 
 ![LPI icon](./screenshots/LPI%20icon.png)
 

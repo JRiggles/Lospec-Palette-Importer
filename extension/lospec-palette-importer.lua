@@ -21,7 +21,7 @@ local defaultSavePath = app.fs.joinPath(app.fs.userConfigPath, "palettes")
 
 local function setPrefs()
     -- allow the user to set a custom path for saved palettes (or restore the default path)
-    local setPrefsDlg = Dialog("LPI Preferences")
+    local setPrefsDlg = Dialog("Lospec Palette Importer - Preferences")
         :label { text = "Save palettes to:" }
         :entry { id = "savePathOverride", text = preferences.paletteSavePath, focus = false }
         setPrefsDlg:button {
