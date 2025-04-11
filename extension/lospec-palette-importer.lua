@@ -22,17 +22,17 @@ local defaultSavePath = app.fs.joinPath(app.fs.userConfigPath, "palettes")
 local function setPrefs()
     -- allow the user to set a custom path for saved palettes (or restore the default path)
     local setPrefsDlg = Dialog("LPI Preferences")
-        :label { text = "Save Palettes To:" }
+        :label { text = "Save palettes to:" }
         :entry { id = "savePathOverride", text = preferences.paletteSavePath, focus = false }
         setPrefsDlg:button {
-            text = "Reset to Default",
+            text = "Reset to default",
             onclick = function ()
                 setPrefsDlg:modify { id = "savePathOverride", text = defaultSavePath }
             end
         }
         :separator()
         -- allow the user to select their preferred palette format
-        :label { text = "Save Palettes As:" }
+        :label { text = "Save palettes as:" }
         :radio {
             id = "gpl",
             text = "*.gpl (recommended)",
@@ -43,6 +43,7 @@ local function setPrefs()
             text = "*.aseprite",
             selected = (preferences.paletteFormat == ".aseprite")
         }
+        :separator()
         :button { id = "ok", text = "OK", onclick = main }
         :show()
 
@@ -192,9 +193,15 @@ local function URIregistryCheck()
             -- confirm initial URI handler registration
             query = WindowsRegQuery()
             if query == nil or query == "" then
-                app.alert("An error occurred while registering the lospec.com URI handler. Please try again.")
+                app.alert {
+                    title = "URI Handler Registration Failed",
+                    text = "An error occurred while registering the lospec.com URI handler. Please try again."
+                }
             else
-                app.alert("lospec.com URI handler registered successfully!")
+                app.alert {
+                    title = "URI Handler Registration Successful",
+                    text = "lospec.com URI handler registered successfully!"
+                }
                 preferences.suppressURIRegAlert = true
             end
         end
@@ -206,7 +213,7 @@ end
 
 local function main()
     if app.apiVersion < 28 then  -- API v28 is required for app.os calls
-        app.alert{
+        app.alert {
             title = "Lospec Palette Importer",
             text = "This extension requires Aseprite version 1.3.7 (API version 28) or higher. Please update Aseprite to use this extension."
         }
@@ -308,6 +315,7 @@ local function main()
                 :label { text = "(tried this URL: " .. url .. ")" }
                 :button { text = "OK" }
                 :show()
+            return main() -- go back to the name prompt dialog
         else
             -- extract color data from the JSON response
             local author = paletteData.author

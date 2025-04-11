@@ -13,9 +13,11 @@ Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅 and i
 - Remove a rogue `print` statement that somehow got left in the last build
 - UI/UX improvements
     - Improved layout of the import dialog
+    - Tweak preferences dialog for visual consistency
     - "OK" on the import dialog is now "Import" because that makes more sense
     - "Cancel" on the palette preview dialog is now "Back...", and clicking on it will return you to the import dialog. This way you can redo your search or "re-roll" your random palette (thanks to Lospec Discord user **@cptn.piranha** for the idea!)
-    - Closing the warning dialog that shows up after entering an empty or malformed palette name will now return to the import dialog instead of closing the extension altogether
+    - Closing the warning dialog that shows up after entering an empty or malformed palette name will now return you to the import dialog instead of closing the extension altogether
+    - Closing the dialog that shows up after searching for a palette that doesn't exist will now return you to the import dialog instead of closing the extension altogether
 - Update how metadata for GPL palettes is formatted in order to deal with an Aseprite issue where palette info text won't show up
     - **NOTE**: I'm not sure *what* is causing this bug, but I've tested the new format and any newly imported palettes shouldn't be affected. The relevant GitHub issue is [#5014](https://github.com/aseprite/aseprite/issues/5104)
 
