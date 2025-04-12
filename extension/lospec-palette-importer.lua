@@ -383,7 +383,9 @@ function main()
   if app.os.windows then
     -- ensure everything is set up for the URI handler on Windows
     checkWindowsRegistry()
-    checkWindowsEnv()
+    if app.params["fromURI"] then
+      checkWindowsEnv()
+    end
   end
   if not checkSprite() then
     return
