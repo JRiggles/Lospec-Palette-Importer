@@ -9,6 +9,8 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 
 ## Latest Changes
 Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅 and improves a few other things...
+- Massive refactor to break up `main()` into many smaller functions to make my life easier
+- Remove unused/unnecessary code from `getLospecData` function
 - Fix issues with the "Save as preset" and "Save and use now" options not actually saving palettes
 - Remove a rogue `print` statement that somehow got left in the last build
 - UI/UX improvements
