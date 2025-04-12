@@ -165,7 +165,7 @@ local function WindowsRegQuery()
   return regQuery
 end
 
-local function URIregistryCheck()
+local function checkWindowsRegistry()
   if preferences.suppressURIRegAlert == true then
     return
   end
@@ -242,13 +242,16 @@ local function createNamePromptDialog()
   }
 end
 
+local function checkWindowsEnv()
+  if os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath then
+    os.execute(string.format('setx %s "%s"', "ASEPRITE_EXECUTABLE", app.fs.appPath))
+  end
+end
+
 local function determineRawName(dialog)
   if dialog.data.daily then
     return getDaily()
   elseif app.params["fromURI"] then
-    if app.os.windows and (os.getenv("ASEPRITE_EXECUTABLE") ~= app.fs.appPath) then
-      os.execute(string.format('setx %s "%s"', "ASEPRITE_EXECUTABLE", app.fs.appPath))
-    end
     return app.params["fromURI"]:sub(#"lospec-palette://" + 1)
   else
     return dialog.data.rawName
@@ -378,7 +381,9 @@ function main()
     return
   end
   if app.os.windows then
-    URIregistryCheck()
+    -- ensure everything is set up for the URI handler on Windows
+    checkWindowsRegistry()
+    checkWindowsEnv()
   end
   if not checkSprite() then
     return
