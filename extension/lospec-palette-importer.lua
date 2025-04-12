@@ -125,27 +125,30 @@ end
 
 local function getLospecData(url)
     local command = 'curl -Ls "' .. url .. '"'
-    if app.os.windows then
+    if true or app.os.windows then
         -- fetch data via curl using io.popen
         local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
         local result = handle:read("*a")
         assert(handle:close(), "curl error - could not close connection")
         return result
-    else -- assume a non-Windows OS, use os.execute instead of io.popen
-        local tempFilePath = app.fs.joinPath(app.fs.tempPath, "palettedata.tmp")
-        -- execute curl, redirect output to a temporary file
-        os.execute(command .. " > " .. tempFilePath)
-        local file = io.open(tempFilePath, "r")
-        if file then
-            local result = file:read("*a")
-            file:close()
-            -- os.remove(tempFilePath) -- NOTE: os.remove is not currently available in Aseprite
-            os.execute("rm " .. tempFilePath) -- remove temporary file
-            return result
-        else
-            app.alert { title = "Error Loading Palette Data", text = "Could not open temp file" }
-            return
-        end
+
+    -- keeping this in case we need to revert later if there are issues with io.popen on MacOS:
+
+    -- else -- assume a non-Windows OS, use os.execute instead of io.popen
+    --     local tempFilePath = app.fs.joinPath(app.fs.tempPath, "palettedata.tmp")
+    --     -- execute curl, redirect output to a temporary file
+    --     os.execute(command .. " > " .. tempFilePath)
+    --     local file = io.open(tempFilePath, "r")
+    --     if file then
+    --         local result = file:read("*a")
+    --         file:close()
+    --         -- os.remove(tempFilePath) -- NOTE: os.remove is not currently available in Aseprite
+    --         os.execute("rm " .. tempFilePath) -- remove temporary file
+    --         return result
+    --     else
+    --         app.alert { title = "Error Loading Palette Data", text = "Could not open temp file" }
+    --         return
+    --     end
     end
 end
 
@@ -205,9 +208,6 @@ local function URIregistryCheck()
                 preferences.suppressURIRegAlert = true
             end
         end
-
-    else
-        return -- nothing to do
     end
 end
 
