@@ -5,9 +5,11 @@
 
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
-*current release: [v1.4.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.4.2](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
+Version 1.4.2 comes hot on the heels of v1.4.1 to address an issue preventing the "Open In App..." feature from working for some Windows users
+
 Version 1.4.1 fixes a few bugs somebody introduced in the last update 😅 and improves a few other things...
 - Massive refactor to break up `main()` into many smaller functions to make my life easier
 - Remove unused/unnecessary code from `getLospecData` function
