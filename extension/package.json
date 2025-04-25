@@ -2,7 +2,7 @@
     "name": "lospec-palette-importer",
     "displayName": "Lospec Palette Importer",
     "description": "Import Palettes from Lospec.com",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "author": {
         "name": "John Riggles",
         "email": "jriggles@icloud.com",
