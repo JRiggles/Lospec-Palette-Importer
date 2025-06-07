@@ -487,6 +487,19 @@ function main()
 		dialog:show()
 	end
 	if (dialog.data and not dialog.data.cancel) or app.params["fromURI"] then
+		-- check if dialog was closed by user via the [x] button
+		local closedByUser = true
+		if dialog.data.rawName == "" then
+			for key, value in pairs(dialog.data) do
+				if key ~= "rawName" and value == true then  -- if any buton was pressed...
+					closedByUser = false
+					break
+				end
+			end
+			if closedByUser then
+				return
+			end
+		end
 		local rawName = determineRawName(dialog)
 		local paletteSlug = sluggify.sluggify(rawName)
 		if not validatePaletteName(paletteSlug) then
