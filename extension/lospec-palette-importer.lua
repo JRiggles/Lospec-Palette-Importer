@@ -24,46 +24,47 @@ local main  -- forward declaration of the main function (avoids circular depende
 --- Configures and applies user preferences for the Lospec Palette Importer.
 --- @return nil
 local function setPrefs()
-  -- allow the user to set a custom path for saved palettes (or restore the default path)
-	local setPrefsDlg = Dialog("Lospec Palette Importer - Preferences"):label{
+	-- allow the user to set a custom path for saved palettes (or restore the default path)
+	local setPrefsDlg =
+		Dialog("Lospec Palette Importer - Preferences"):label {
 		text = "Save palettes to:"
-	}:entry{
+	}:entry {
 		id = "savePathOverride",
 		text = preferences.paletteSavePath,
 		focus = false
 	}
-	setPrefsDlg:button{
+	setPrefsDlg:button {
 		text = "Reset to default",
 		onclick = function()
-			setPrefsDlg:modify{
+			setPrefsDlg:modify {
 				id = "savePathOverride",
 				text = defaultSavePath
 			}
 		end
-	}:separator():label{
+	}:separator():label {
 		text = "Save palettes as:"
-	}:radio{
-        -- allow the user to select their preferred palette format
+	}:radio {
+		-- allow the user to select their preferred palette format
 		id = "gpl",
 		text = "*.gpl (recommended)",
 		selected = (preferences.paletteFormat == ".gpl")
-	}:radio{
+	}:radio {
 		id = "aseprite",
 		text = "*.aseprite",
 		selected = (preferences.paletteFormat == ".aseprite")
-	}:separator():button{
+	}:separator():button {
 		id = "ok",
 		text = "OK"
 	}:show()
 
-  -- save palette format preference
+	-- save palette format preference
 	preferences.paletteFormat = setPrefsDlg.data.gpl and ".gpl" or ".aseprite"
 	local newPath = setPrefsDlg.data.savePathOverride
 	if app.fs.isDirectory(newPath) then
-        -- save the new path to the preferences if it's a valid directory
+		-- save the new path to the preferences if it's a valid directory
 		preferences.paletteSavePath = newPath
 	else
-		app.alert{
+		app.alert {
 			title = "Invalid Directory",
 			text = "The specified path is not an existing directory."
 		}
@@ -76,18 +77,18 @@ end
 --- @param hex string The hexadecimal string representing the color.
 --- @return table Color object with keys 'r', 'g', 'b' corresponding to the color components.
 local function hexToColor(hex)
-  -- take a 'hex' color string and convert it to a Color object
+	-- take a 'hex' color string and convert it to a Color object
 	local r = tonumber(hex:sub(1, 2), 16)
 	local g = tonumber(hex:sub(3, 4), 16)
 	local b = tonumber(hex:sub(5, 6), 16)
-	return Color{red = r, green = g, blue = b}
+	return Color {red = r, green = g, blue = b}
 end
 
 --- Converts a table of hexadecimal color codes into a table of Aseprite Color objects.
 --- @param hexTable table A table containing hexadecimal color codes as strings.
 --- @return table Color table containing the converted color values.
 local function jsonToColorTable(hexTable)
-  -- take a table of hex color strings 'hexTable', and convert it to a table of Color objects
+	-- take a table of hex color strings 'hexTable', and convert it to a table of Color objects
 	local colorTable = {}
 	for _, hex in ipairs(hexTable) do
 		table.insert(colorTable, hexToColor(hex))
@@ -98,7 +99,7 @@ end
 --- Sets the specified palette as the current palette.
 --- @param palette table The palette data structure to be set as current.
 local function setPaletteAsCurrent(palette)
-  -- set the given 'palette' as the current palette for the active sprite
+	-- set the given 'palette' as the current palette for the active sprite
 	app.activeSprite:setPalette(palette)
 	app.refresh()
 end
@@ -107,17 +108,18 @@ end
 --- @param savePath string: The path where the file is intended to be saved.
 --- @return boolean: Returns true if the file overwrite is permitted by the user, false otherwise.
 local function checkOverwrite(savePath)
-  -- check if the palette at 'savePath' exists and warn the user if it would be replaced
+	-- check if the palette at 'savePath' exists and warn the user if it would be replaced
 	local exists = app.fs.isFile(savePath)
 	if exists then
-		local paletteExistsWarningDlg = Dialog("This Palette Already Exists!"):label{
+		local paletteExistsWarningDlg =
+			Dialog("This Palette Already Exists!"):label {
 			text = "A palette with this name already exists. Do you want to replace it?"
-		}:newrow():label{
+		}:newrow():label {
 			text = '(selecting "No" will update the active palette but won\'t save it)'
-		}:button{
+		}:button {
 			id = "yes",
 			text = "Yes"
-		}:button{
+		}:button {
 			id = "no",
 			text = "No"
 		}:show()
@@ -139,15 +141,15 @@ end
 --- @param colors table A table containing the color definitions for the palette.
 --- @return nil
 local function writeGplFile(savePath, name, author, url, colors)
-  -- write the palette info to a *.gpl file
+	-- write the palette info to a *.gpl file
 	local gplFile = assert(io.open(savePath, "w"), "Error writing to palette file!")
 	gplFile:write("GIMP Palette", "\n")
 	gplFile:write("#" .. name, "\n")
 	gplFile:write("#Created by " .. author, "\n")
-	gplFile:write("#" .. # colors .. " colors", "\n")
+	gplFile:write("#" .. #colors .. " colors", "\n")
 	gplFile:write('#Imported with "Lospec Palette Importer"\n')
 	gplFile:write("#Lospec URL: " .. url, "\n")
-    -- write each color to the gpl file as rgb values with the hex code as a comment
+	-- write each color to the gpl file as rgb values with the hex code as a comment
 	for _, color in ipairs(colors) do
 		local r = hexToColor(color).red
 		local g = hexToColor(color).green
@@ -161,8 +163,13 @@ end
 --- @param url string The URL from which to fetch the Lospec data.
 --- @return string JSON data from the Lospec service, or nil if an error occurs.
 local function getLospecData(url)
-	local command = 'curl -Ls "' .. url .. '"'
-  -- fetch data via curl using io.popen
+	local command = 'curl -Ls "' .. url .. '"' -- default command for macOS and Windows
+	--- @diagnostic disable-next-line: undefined-field
+	if app.os.linux then
+		-- fix for Steam Aseprite on Linux: use curl from /usr/bin/env; thanks @nielpattin for the tip!
+		command = '/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/curl -Ls "' .. url .. '" 2>&1'
+	end
+	-- fetch data via curl using io.popen
 	local handle = assert(io.popen(command), "curl error - could not connect to " .. url)
 	local result = handle:read("*a")
 	handle:close()
@@ -170,9 +177,15 @@ local function getLospecData(url)
 end
 
 --- Retrieves the daily Lospec palette data.
---- @return string JSON data containing information about the daily palette.
+--- @return string name of the daily palette.
 local function getDaily()
 	return getLospecData([[https://lospec.com/palette-list/current-daily-palette.txt]])
+end
+
+--- Retrieves the Lospec daily tag
+--- @return string tag of the day
+local function getTag()
+	return getLospecData([[https://lospec.com/dailies/current-daily-tag.txt]])
 end
 
 --- Checks the Windows registry for the existence of the Lospec palette URI handler.
@@ -195,19 +208,20 @@ local function checkWindowsRegistry()
 	end
 	local query = WindowsRegQuery()
 	if query == nil or query == "" then
-		local regPermissionDlg = Dialog("lospec.com URI Handler Not Registered"):label{
+		local regPermissionDlg =
+			Dialog("lospec.com URI Handler Not Registered"):label {
 			text = "Your permission is required in order to allow Lospec Palette "
-		}:newrow():label{
+		}:newrow():label {
 			text = 'Importer to handle "Open In App..." links from lospec.com.'
-		}:newrow():label{
+		}:newrow():label {
 			text = 'Please click "OK", then click "Yes" on the Windows UAC prompt.'
-		}:button{
+		}:button {
 			id = "ok",
 			text = "OK"
-		}:button{
+		}:button {
 			id = "cancel",
 			text = "Cancel"
-		}:separator():check{
+		}:separator():check {
 			id = "notagain",
 			text = "Don't show this again"
 		}:show()
@@ -215,17 +229,19 @@ local function checkWindowsRegistry()
 			preferences.suppressURIRegAlert = true
 		end
 		if regPermissionDlg.data.ok then -- permission granted, update registry
-			os.execute('regedit /s "%appdata%\\Aseprite\\extensions\\lospec-palette-importer\\WindowsHelper\\RegisterURIHandler.reg"')
+			os.execute(
+				'regedit /s "%appdata%\\Aseprite\\extensions\\lospec-palette-importer\\WindowsHelper\\RegisterURIHandler.reg"'
+			)
 
 			-- check registry again to confirm initial URI handler registration
 			query = WindowsRegQuery()
 			if query == nil or query == "" then
-				app.alert{
+				app.alert {
 					title = "URI Handler Registration Failed",
 					text = "An error occurred while registering the lospec.com URI handler. Please try again."
 				}
 			else
-				app.alert{
+				app.alert {
 					title = "URI Handler Registration Successful",
 					text = "lospec.com URI handler registered successfully!"
 				}
@@ -248,7 +264,7 @@ end
 --- @return boolean true if the API version is supported, false otherwise.
 local function checkApiVersion()
 	if app.apiVersion < 28 then
-		app.alert{
+		app.alert {
 			title = "Lospec Palette Importer",
 			text = "This extension requires Aseprite version 1.3.7 (API version 28) or higher."
 		}
@@ -261,7 +277,7 @@ end
 --- @return boolean true if an active sprite exists, false otherwise.
 local function checkSprite()
 	if not app.sprite then
-		app.alert{
+		app.alert {
 			title = "No Active Sprite!",
 			text = "Please open a sprite or create a new one"
 		}
@@ -273,25 +289,25 @@ end
 --- Initializes and displays the import dialog for Lospec palettes.
 --- @return Dialog
 local function createImportDialog()
-	return Dialog("Lospec Palette Importer"):label{
+	return Dialog("Lospec Palette Importer"):label {
 		text = "Palette name or Lospec URL slug (case-insenstitive):"
-	}:entry{
+	}:entry {
 		id = "rawName",
 		focus = true
-	}:button{
+	}:button {
 		id = "import",
 		text = "Import"
-	}:separator():newrow():button{
+	}:separator():newrow():button {
 		id = "daily",
 		text = "Get daily palette"
-	}:button{
+	}:button {
 		id = "random",
 		text = "Get random palette"
-	}:separator():button{
+	}:separator():button {
 		id = "prefs",
 		text = "Preferences...",
 		onclick = setPrefs
-	}:button{
+	}:button {
 		id = "cancel",
 		text = "Cancel"
 	}
@@ -305,8 +321,9 @@ local function determineRawName(dialog)
 		return getDaily()
 	elseif dialog.data.random then
 		return "random" -- random palettes just use "random" as the slug
-	elseif app.params["fromURI"] then
-		return app.params["fromURI"]:sub(18)
+	elseif app.params.fromURI then
+		app.alert(app.params.fromURI)
+		return app.params.fromURI:sub(18) -- strip off "lospec-palette://"
 	else
 		return dialog.data.rawName
 	end
@@ -320,17 +337,17 @@ local function validatePaletteName(slug)
 	if (slug and slug ~= "") then
 		return true
 	end
-	Dialog("Invalid Palette Name"):label{
+	Dialog("Invalid Palette Name"):label {
 		text = "Palette names may only contain the following characters:"
-	}:newrow():label{
+	}:newrow():label {
 		text = "  alphanumerics: A-Z, a-z, 0-9"
-	}:newrow():label{
+	}:newrow():label {
 		text = "  hyphens/dashes: - "
-	}:newrow():label{
+	}:newrow():label {
 		text = '  spaces (these will be converted to hyphens "-")'
-	}:newrow():label{
+	}:newrow():label {
 		text = "  square brackets: [ and ] (these will be ignored)"
-	}:button{
+	}:button {
 		text = "OK"
 	}:show()
 	return false
@@ -348,13 +365,13 @@ end
 --- @param name string The name of the palette that could not be located.
 --- @param url string The URL associated with the palette request
 local function showPaletteNotFoundDialog(name, url)
-	Dialog("Palette Not Found"):label{
+	Dialog("Palette Not Found"):label {
 		text = 'Couldn\'t find a palette named "' .. name .. '" on Lospec.'
-	}:newrow():label{
+	}:newrow():label {
 		text = "Please make sure the palette's name is spelled correctly."
-	}:newrow():label{
+	}:newrow():label {
 		text = "(tried this URL: " .. url .. ")"
-	}:button{
+	}:button {
 		text = "OK"
 	}:show()
 end
@@ -398,27 +415,32 @@ end
 --- @param data table A table containing the dialog data from the initial import.
 --- @param url string The URL associated with the palette.
 --- @param wasRandom boolean A flag indicating whether the palette was randomly selected
-local function showPalettePreviewDialog(data, url, wasRandom)
+--- @param isDailyPalette boolean A flag indicating that this is the current daily palette
+local function showPalettePreviewDialog(data, url, wasRandom, isDailyPalette)
 	local name = data.name
 	local author = data.author ~= "" and data.author or "an unspecified author"
 	local colors = data.colors
-	local ncolors = # colors
+	local ncolors = #colors
 	local palette = Palette(ncolors)
 	for i, hex in ipairs(colors) do
 		palette:setColor(i - 1, hexToColor(hex))
 	end
-	local previewDlg = Dialog("Lospec Palette Importer - Preview"):label{
+	local previewDlg =
+		Dialog("Lospec Palette Importer - Preview"):label {
 		text = '"' .. name .. '" by ' .. author .. ", " .. ncolors .. " colors"
 	}:newrow()
+	-- show the daily tag if the user has selected the daily palette
+	:label {id = dailyTag, text = "Daily Tag: #" .. getTag(), visible = isDailyPalette}
+	-- previewDlg:modify {id = dailyTag, visible = isDailyPalette}
 	local urlDisplay = url:gsub("%.json$", "")
 	if wasRandom then
 		urlDisplay = urlDisplay:gsub("%random", sluggify.sluggify(name))
 	end
-	previewDlg:entry{
+	previewDlg:entry {
 		id = "urlPreview",
 		text = urlDisplay,
 		onchange = function()
-			previewDlg:modify{
+			previewDlg:modify {
 				id = "urlPreview",
 				text = urlDisplay
 			}
@@ -431,7 +453,7 @@ local function showPalettePreviewDialog(data, url, wasRandom)
 		for j = i, math.min(i + maxPerRow - 1, ncolors) do
 			table.insert(row, colorTable[j])
 		end
-		previewDlg:shades{
+		previewDlg:shades {
 			mode = "pick",
 			colors = row,
 			hexpand = ncolors <= maxPerRow,
@@ -444,17 +466,17 @@ local function showPalettePreviewDialog(data, url, wasRandom)
 			end
 		}:newrow()
 	end
-	previewDlg:separator():button{
+	previewDlg:separator():button {
 		id = "saveAndUse",
 		text = "Save and use now",
 		focus = true
-	}:button{
+	}:button {
 		id = "use",
 		text = "Use now, don't save"
-	}:newrow():button{
+	}:newrow():button {
 		id = "save",
 		text = "Save as preset"
-	}:button{
+	}:button {
 		id = "back",
 		text = "Back...",
 		onclick = function()
@@ -473,9 +495,9 @@ function main()
 	end
 	--- @diagnostic disable-next-line: undefined-field
 	if app.os.windows then
-    -- ensure everything is set up for the URI handler on Windows
+		-- ensure everything is set up for the URI handler on Windows
 		checkWindowsRegistry()
-		if app.params["fromURI"] then
+		if app.params.fromURI then
 			checkWindowsEnv()
 		end
 	end
@@ -483,15 +505,15 @@ function main()
 		return
 	end
 	local dialog = createImportDialog()
-	if not app.params["fromURI"] then
+	if not app.params.fromURI then
 		dialog:show()
 	end
-	if (dialog.data and not dialog.data.cancel) or app.params["fromURI"] then
+	if (dialog.data and not dialog.data.cancel) or app.params.fromURI then
 		-- check if dialog was closed by user via the [x] button
 		local closedByUser = true
 		if dialog.data.rawName == "" then
 			for key, value in pairs(dialog.data) do
-				if key ~= "rawName" and value == true then  -- if any buton was pressed...
+				if key ~= "rawName" and value == true then -- if any buton was pressed...
 					closedByUser = false
 					break
 				end
@@ -501,6 +523,10 @@ function main()
 			end
 		end
 		local rawName = determineRawName(dialog)
+		-- if the user pasted a full Lospec URL, strip the base URL portion
+		if rawName:sub(1, 32) == "https://lospec.com/palette-list/" then
+			rawName = rawName:sub(33)
+		end
 		local paletteSlug = sluggify.sluggify(rawName)
 		if not validatePaletteName(paletteSlug) then
 			return main()
@@ -511,7 +537,7 @@ function main()
 			showPaletteNotFoundDialog(rawName, url)
 			return main()
 		end
-		showPalettePreviewDialog(paletteData, url, dialog.data.random)
+		showPalettePreviewDialog(paletteData, url, dialog.data.random, dialog.data.daily)
 		app.params.fromURI = nil
 		app.command.Refresh()
 	end
@@ -521,11 +547,11 @@ end
 ---@diagnostic disable-next-line: lowercase-global
 function init(plugin) -- initialize extension
 	preferences = plugin.preferences -- update preferences global with plugin.preferences values
-  -- if the user hasn't configured a custom path for saved palettes, use the default
+	-- if the user hasn't configured a custom path for saved palettes, use the default
 	if preferences.paletteSavePath == nil then
 		preferences.paletteSavePath = defaultSavePath
 	end
-  -- if the user hasn't specified a preferred palette format, use the default (*.gpl)
+	-- if the user hasn't specified a preferred palette format, use the default (*.gpl)
 	if preferences.paletteFormat == nil then
 		preferences.paletteFormat = ".gpl"
 	end
@@ -533,12 +559,12 @@ function init(plugin) -- initialize extension
 		preferences.suppressURIRegAlert = false
 	end
 
-  -- add "Import Palette from Lospec" command to palette options menu
-	plugin:newCommand{
+	-- add "Import Palette from Lospec" command to palette options menu
+	plugin:newCommand {
 		id = "importFromLospec",
 		title = "Import Palette from Lospec",
 		group = "palette_generation",
-		onclick = main-- run main function
+		onclick = main
 	}
 end
 
