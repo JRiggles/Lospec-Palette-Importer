@@ -322,7 +322,6 @@ local function determineRawName(dialog)
 	elseif dialog.data.random then
 		return "random" -- random palettes just use "random" as the slug
 	elseif app.params.fromURI then
-		app.alert(app.params.fromURI)
 		return app.params.fromURI:sub(18) -- strip off "lospec-palette://"
 	else
 		return dialog.data.rawName
@@ -509,25 +508,23 @@ function main()
 		dialog:show()
 	end
 	if (dialog.data and not dialog.data.cancel) or app.params.fromURI then
-		-- check if dialog was closed by user via the [x] button
-		local closedByUser = true
-		if dialog.data.rawName == "" then
-			for key, value in pairs(dialog.data) do
-				if key ~= "rawName" and value == true then -- if any buton was pressed...
-					closedByUser = false
-					break
-				end
-			end
-			if closedByUser then
-				return
-			end
-		end
 		local rawName = determineRawName(dialog)
 		-- if the user pasted a full Lospec URL, strip the base URL portion
 		if rawName:sub(1, 32) == "https://lospec.com/palette-list/" then
 			rawName = rawName:sub(33)
 		end
 		local paletteSlug = sluggify.sluggify(rawName)
+		-- bail here if none of the main import options were selected (allows closing with the [X])
+		-- FIX: #9 - the previous method of checking how the dlg was closed broke launching fromURI
+		if not (
+			dialog.data.import or
+			dialog.data.daily or
+			dialog.data.random or
+			app.params.fromURI
+		) then
+			return
+		end
+		-- if the above check passed, continue to validation and palette fetch
 		if not validatePaletteName(paletteSlug) then
 			return main()
 		end
