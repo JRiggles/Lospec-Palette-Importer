@@ -11,6 +11,7 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 **Version 1.5.0**
 - The Lospec Dailies <kbd>\#tag</kbd> is now shown on the Palette Preview window when you import the Daily palette
 - Pasting the entire Lospec palette list URL for a given palette no longer causes an error; previously, the extension only worked with palette names or URL slugs, but now full URLs will work too
+- Fixes an issue from v1.4.4 that broke "Open In App..." links from lospec.com
 
 ## Previous Updates
 **Version 1.4.4** fixes a bug where the "Invalid Palette Name" dialog would pop up if you closed the Import Dialog with the \[x\] button
