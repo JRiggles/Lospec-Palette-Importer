@@ -38,10 +38,6 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 >[!IMPORTANT]
 >The minimum required Aseprite version is now 1.3.7 (API version 28)
 
-## Known Issue
-There is an apparent issue with the Aseprite CLI that is breaking LPI's ability to use Lospec's "Open In App..." links.
-I'm looking for a solution on my end, but it seems like the problem is with Aseprite. Fix is TBD!
-
 ##
 
 ### Import
