@@ -10,7 +10,6 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 ## Latest Changes
 **Version 1.5.0**
 - The Lospec Dailies <kbd>\#tag</kbd> is now shown on the Palette Preview window when you import the Daily palette
-- Fixes a bug when calling `curl` in the Steam version of Aseprite under Linux. Thanks to itch user **@nielpattin** for the tip!
 - Pasting the entire Lospec palette list URL for a given palette no longer causes an error; previously, the extension only worked with palette names or URL slugs, but now full URLs will work too
 
 ## Previous Updates
