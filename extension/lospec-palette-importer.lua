@@ -1,6 +1,6 @@
 --[[
 MIT LICENSE
-Copyright © 2024-25 John Riggles [sudo_whoami]
+Copyright © 2024-26 John Riggles [sudo_whoami]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -131,6 +131,20 @@ local function checkOverwrite(savePath)
 	else -- this palette hasn't been saved yet, so go ahead
 		return true
 	end
+end
+
+--- Replaces forbidden characters in palette names with "-" so they can be used for file names
+--- Forbidden: \ / : * ? " < > | and control characters
+--- @param name string The name to sanitize
+--- @return string name The sanitized palette name
+local function sanitizeNameForFile(name)
+	-- replace forbidden characters
+	name = name:gsub('[\\/:*?"<>|%c]', "-")
+	-- trim leading/trailing whitespace and dashes
+	name = name:gsub("^%s+", "")
+						 :gsub("%s+$", "")
+						 :gsub("%-+", "-")
+	return name
 end
 
 --- Writes a GPL (GIMP Palette) file using the provided details.
@@ -397,7 +411,12 @@ end
 --- @param url string The URL associated with the palette.
 --- @param colors table A table containing the list of colors included in the palette.
 local function handlePaletteSaveOptions(dlg, palette, name, author, url, colors)
-	local savePath = app.fs.joinPath(preferences.paletteSavePath, name .. preferences.paletteFormat)
+  -- sanitize the name used for the saved palette file (fix for an issue with palettes whose names
+	-- contain certain special characters, like "r/place 2023")
+	local sanitizedName = sanitizeNameForFile(name)
+	local savePath = app.fs.joinPath(
+		preferences.paletteSavePath, sanitizedName .. preferences.paletteFormat
+	)
 	if dlg.data.saveAndUse or dlg.data.save then
 		if checkOverwrite(savePath) then
 			savePaletteToFile(savePath, palette, name, author, url, colors)

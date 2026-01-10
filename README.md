@@ -5,9 +5,12 @@
 
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
-*current release: [v1.5.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.5.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
+**Version 1.5.1**
+- Fixes an edge case where palettes with certain special characters in their name (notably, the forward slash "/") couldn't be saved. Thanks to Lospec Discord user @Myian for the report!
+
 **Version 1.5.0**
 - The Lospec Dailies <kbd>\#tag</kbd> is now shown on the Palette Preview window when you import the Daily palette
 - Pasting the entire Lospec palette list URL for a given palette no longer causes an error; previously, the extension only worked with palette names or URL slugs, but now full URLs will work too
