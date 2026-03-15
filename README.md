@@ -11,8 +11,7 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 **Version 1.6.0**
 - Lospec Palette Importer will now offer a list of suggested palette names if it can't find an exact match
 
-*Huge thanks to [Skeddles](https://lospec.com/skeddles) for the recent updates to the Lospec API that mad
-e this possible!*
+*Huge thanks to [Skeddles](https://lospec.com/skeddles) for the recent updates to the Lospec API that made this possible!*
 
 ## Previous Updates
 **Version 1.5.1**
