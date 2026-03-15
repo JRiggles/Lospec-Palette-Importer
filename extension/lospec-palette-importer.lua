@@ -52,6 +52,19 @@ local function setPrefs()
 		id = "aseprite",
 		text = "*.aseprite",
 		selected = (preferences.paletteFormat == ".aseprite")
+	}:separator():label {
+		-- allow the user to set a limit on the number of palette suggestions returned by the API when
+		-- an exact match isn't found (3-10)
+		text = "Number of palette suggestions (3-10):"
+	}:slider{
+		id="suggestionLimitSlider",
+		label="",
+		min=3,
+		max=10,  -- this is the max numbe of suggestions the API will return anyway
+		value=(preferences.suggestionLimit or 5),
+		onchange= function ()  -- save the suggestion limit pref on change
+			preferences.suggestionLimit = setPrefsDlg.data.suggestionLimitSlider
+		end,
 	}:separator():button {
 		id = "ok",
 		text = "OK"
@@ -432,9 +445,9 @@ end
 --- Displays the palette preview dialog.
 --- @param data table A table containing the dialog data from the initial import.
 --- @param url string The URL associated with the palette.
---- @param wasRandom boolean A flag indicating whether the palette was randomly selected
+--- @param isRandom boolean A flag indicating whether the palette was randomly selected
 --- @param isDailyPalette boolean A flag indicating that this is the current daily palette
-local function showPalettePreviewDialog(data, url, wasRandom, isDailyPalette)
+local function showPalettePreviewDialog(data, url, isRandom, isDailyPalette)
 	local name = data.name
 	local author = data.author ~= "" and data.author or "an unspecified author"
 	local colors = data.colors
@@ -451,7 +464,7 @@ local function showPalettePreviewDialog(data, url, wasRandom, isDailyPalette)
 	:label {id = dailyTag, text = "Daily Tag: #" .. getTag(), visible = isDailyPalette}
 	-- previewDlg:modify {id = dailyTag, visible = isDailyPalette}
 	local urlDisplay = url:gsub("%.json$", "")
-	if wasRandom then
+	if isRandom then
 		urlDisplay = urlDisplay:gsub("%random", sluggify.sluggify(name))
 	end
 	previewDlg:entry {
@@ -506,6 +519,47 @@ local function showPalettePreviewDialog(data, url, wasRandom, isDailyPalette)
 	handlePaletteSaveOptions(previewDlg, palette, name, author, urlDisplay, colors)
 end
 
+--- Get a list of suggested palette names from the Lospec API based on a search query, and display
+--- them in a dialog.
+--- @param query string: the search query
+local function getPaletteSuggestions(query)
+	-- fetch palette suggestions from the Lospec API and display them in a dialog
+	-- NOTE: api/v1/ endpoinds require bearer authorization (this one below does not!)
+	-- TODO: figure out how to handle authorization for these endpoints in a way that doesn't require users to generate their own API tokens...
+		local suggestionsData = getLospecData("https://api.lospec.com/palettes/suggest/" .. query)
+		local suggestions = assert(json.decode(suggestionsData), "Error decoding JSON data.")
+		local suggestionDlg = Dialog("Did you mean one of these?"):label {
+			text = "We couldn't find a palette with the exact name "
+		}:newrow():label {
+			text = '"' .. query .. '"'
+		}:newrow():label {
+			text = "but here are some close matches:"
+		}:newrow()
+		local limit = preferences.suggestionLimit or 5
+		local count = 0
+		for _, suggestion in ipairs(suggestions.data) do
+			if count >= limit then break end
+			suggestionDlg:button {
+				text = suggestion.title,
+				onclick = function()
+					suggestionDlg:close()
+					local url = "https://lospec.com/palette-list/" .. suggestion.slug
+					local data = fetchPaletteData(url .. ".json")
+					showPalettePreviewDialog(data, url .. ".json", false, false)
+				end
+			}:newrow()
+			count = count + 1
+		end
+		suggestionDlg:separator()
+		suggestionDlg:button {
+			text = "None of these are correct...",
+			onclick = function()
+				suggestionDlg:close()
+			end
+		}
+		suggestionDlg:show()
+end
+
 --- Main entry point for the Lospec Palette Importer extension.
 function main()
 	if not checkApiVersion() then
@@ -522,12 +576,12 @@ function main()
 	if not checkSprite() then
 		return
 	end
-	local dialog = createImportDialog()
+	local importDlg = createImportDialog()
 	if not app.params.fromURI then
-		dialog:show()
+		importDlg:show()
 	end
-	if (dialog.data and not dialog.data.cancel) or app.params.fromURI then
-		local rawName = determineRawName(dialog)
+	if (importDlg.data and not importDlg.data.cancel) or app.params.fromURI then
+		local rawName = determineRawName(importDlg)
 		-- if the user pasted a full Lospec URL, strip the base URL portion
 		if rawName:sub(1, 32) == "https://lospec.com/palette-list/" then
 			rawName = rawName:sub(33)
@@ -536,9 +590,9 @@ function main()
 		-- bail here if none of the main import options were selected (allows closing with the [X])
 		-- FIX: #9 - the previous method of checking how the dlg was closed broke launching fromURI
 		if not (
-			dialog.data.import or
-			dialog.data.daily or
-			dialog.data.random or
+			importDlg.data.import or
+			importDlg.data.daily or
+			importDlg.data.random or
 			app.params.fromURI
 		) then
 			return
@@ -550,10 +604,13 @@ function main()
 		local url = "https://lospec.com/palette-list/" .. paletteSlug .. ".json"
 		local paletteData = fetchPaletteData(url)
 		if paletteData.error then
-			showPaletteNotFoundDialog(rawName, url)
-			return main()
+			-- try the palette suggestion API to see if we can find a close match
+			getPaletteSuggestions(rawName)
+			return
+			-- showPaletteNotFoundDialog(rawName, url)
+			-- return main()
 		end
-		showPalettePreviewDialog(paletteData, url, dialog.data.random, dialog.data.daily)
+		showPalettePreviewDialog(paletteData, url, importDlg.data.random, importDlg.data.daily)
 		app.params.fromURI = nil
 		app.command.Refresh()
 	end
@@ -573,6 +630,10 @@ function init(plugin) -- initialize extension
 	end
 	if preferences.suppressURIRegAlert == nil then
 		preferences.suppressURIRegAlert = false
+	end
+	-- if the user hasn't set a pref for the number of palette suggestions to show, default to 5
+	if preferences.suggestionLimit == nil then
+		preferences.suggestionLimit = 5
 	end
 
 	-- add "Import Palette from Lospec" command to palette options menu
