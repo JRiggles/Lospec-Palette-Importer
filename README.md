@@ -5,9 +5,18 @@
 
 This [Aseprite](https://aseprite.org) extension allows you to use and save color palettes from [Lospec](https://lospec.com). Simply enter the name of the Lospec palette you want to import.
 
-*current release: [v1.6.0](https://sudo-whoami.itch.io/lospec-palette-importer)*
+*current release: [v1.6.1](https://sudo-whoami.itch.io/lospec-palette-importer)*
 
 ## Latest Changes
+**Version 1.6.1**
+- Adds the ability to open Lospec.com palette links from the palette preview window
+- Backend improvements: Huge refactor of the extension to break it up into smaller submodules for easier maintainability in the future
+
+>[!INFO]
+>Because of the changes to the extension's internal structure, you will need to approve access for each submodule when it attempts to reach out to Lospec.com, open Lospec links, or write to a file on your system (i.e. when saving a palette).
+>
+>![security dialog](./screenshots/security%20api.png)
+
 **Version 1.6.0**
 - Lospec Palette Importer will now offer a list of suggested palette names if it can't find an exact match
 
@@ -66,11 +75,22 @@ This extension has been tested on both Windows and Mac OS (specifically, Windows
 It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
-When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command. Addtionally, this extension will need your permission to write files if you intend to save any imported palettes.
+When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
 
-When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access" (you'll only need to do this once)
+When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access":
 
-![security dialog](./screenshots/security%20dialog.png)
+![security dialog 2](./screenshots/security%20api.png)
+
+Addtionally, this extension will need your permission to write files if you intend to save any imported palettes:
+
+![security dialog 3](./screenshots/security%20storage.png)
+
+And one last time when you open external Lospec.com palette list links:
+
+![security dialog 3](./screenshots/security%20platform.png)
+
+>[!TIP]
+>You'll only need to grant these permissions to Lospec Palette Importer once
 
 ## Features & Usage
 If you know the name of the palette you want to import, simply enter it and click the **Import** button. If you're looking for inspiration, you can also check out the current **Daily** palette or a **Random** palette!
