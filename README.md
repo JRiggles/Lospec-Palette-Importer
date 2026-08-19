@@ -10,7 +10,7 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 ## Latest Changes
 **Version 1.6.1**
 - Adds the ability to open Lospec.com palette links from the palette preview window
-- Backend improvements: Huge refactor of the extension to break it up into smaller submodules for easier maintainability in the future
+- Backend improvements: Huge refactor of the extension to break it up into smaller submodules for a) better transparency when Lospec Palette Importer needs permissions to execute, and b) easier maintainability in the future
 
 >[!NOTE]
 >Because of the changes to the extension's internal structure, you will need to approve access for each submodule when it attempts to reach out to Lospec.com, open Lospec links, or write to a file on your system (i.e. when saving a palette). See [Permissions](#Permissions) below for more details.
@@ -69,12 +69,11 @@ e this possible!*
 ![preferences dialog](./screenshots/prefs%20dialog.png)
 
 ## Requirements
-
 This extension has been tested on both Windows and Mac OS (specifically, Windows 11 and Mac OS Tahoe 26.5.2)
 
 It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
-## 
+## Permissions
 When you run this plugin for the first time, you'll be aked to grant some . This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
 
 When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access":
