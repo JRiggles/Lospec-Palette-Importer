@@ -12,8 +12,8 @@ This [Aseprite](https://aseprite.org) extension allows you to use and save color
 - Adds the ability to open Lospec.com palette links from the palette preview window
 - Backend improvements: Huge refactor of the extension to break it up into smaller submodules for easier maintainability in the future
 
->[!INFO]
->Because of the changes to the extension's internal structure, you will need to approve access for each submodule when it attempts to reach out to Lospec.com, open Lospec links, or write to a file on your system (i.e. when saving a palette).
+>[!NOTE]
+>Because of the changes to the extension's internal structure, you will need to approve access for each submodule when it attempts to reach out to Lospec.com, open Lospec links, or write to a file on your system (i.e. when saving a palette). See [Permissions](#Permissions) below for more details.
 >
 >![security dialog](./screenshots/security%20api.png)
 
@@ -70,12 +70,12 @@ e this possible!*
 
 ## Requirements
 
-This extension has been tested on both Windows and Mac OS (specifically, Windows 11 and Mac OS Sequoia 15.3.2)
+This extension has been tested on both Windows and Mac OS (specifically, Windows 11 and Mac OS Tahoe 26.5.2)
 
 It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
-## Permissions
-When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
+## 
+When you run this plugin for the first time, you'll be aked to grant some . This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
 
 When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access":
 
@@ -89,8 +89,8 @@ And one last time when you open external Lospec.com palette list links:
 
 ![security dialog 3](./screenshots/security%20platform.png)
 
->[!TIP]
->You'll only need to grant these permissions to Lospec Palette Importer once
+>[!NOTE]
+>You'll only need to grant these  to Lospec Palette Importer once
 
 ## Features & Usage
 If you know the name of the palette you want to import, simply enter it and click the **Import** button. If you're looking for inspiration, you can also check out the current **Daily** palette or a **Random** palette!
@@ -104,12 +104,12 @@ Palettes are saved in GIMP palette format (*.gpl) by default since this option a
 
 Palettes can also be saved in *.aseprite format, but this option won't include any of the extra data from Lospec
 
-To use this plugin, just open the "Options" menu above the color palette and then select "Import Palette from Lospec"
+To use this plugin, just open the "Options" (≡) menu above the color palette and then select "Import Palette from Lospec"
+
+![palette menu](./screenshots/palette%20menu%20selection.png)
 
 >[!TIP]
 >If a palette you've just imported doesn't show up in the palette list immediately, just click the refresh button in the upper-right corner of the list
-
-![palette menu](./screenshots/palette%20menu%20selection.png)
 
 ## Installation
 You can download this extension from [itch.io](https://sudo-whoami.itch.io/lospec-palette-importer) as a "pay what you want" tool
