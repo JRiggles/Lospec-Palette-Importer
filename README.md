@@ -74,7 +74,7 @@ This extension has been tested on both Windows and Mac OS (specifically, Windows
 It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
-When you run this plugin for the first time, you'll be aked to grant some . This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
+When you run this plugin for the first time, you'll be aked to grant some permissions. This extension uses `curl` under the hood to get data from Lospec and will need your permission to execute that command.
 
 When prompted, select the "Give full trust to this script" checkbox and then click "Give Script Full Access":
 
@@ -89,7 +89,7 @@ And one last time when you open external Lospec.com palette list links:
 ![security dialog 3](./screenshots/security%20platform.png)
 
 >[!NOTE]
->You'll only need to grant these  to Lospec Palette Importer once
+>You'll only need to grant these permissions to Lospec Palette Importer once
 
 ## Features & Usage
 If you know the name of the palette you want to import, simply enter it and click the **Import** button. If you're looking for inspiration, you can also check out the current **Daily** palette or a **Random** palette!
