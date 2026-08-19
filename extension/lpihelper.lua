@@ -5,9 +5,9 @@
 ---@diagnostic disable: undefined-global
 
 if app.params["fromURI"] then
-    if not app.sprite then -- open a new file if necessary
-        ---@diagnostic disable-next-line: undefined-field - this method exists but is undocumented
-        app.command.newFile { ui = false, width = 160, height = 144 }
-    end
-    app.command.importFromLospec() -- run the palette importer
+  if not app.sprite then -- open a new file if necessary
+    ---@diagnostic disable-next-line: undefined-field - this method exists but is undocumented
+    app.command.newFile {ui = false, width = 160, height = 144}
+  end
+  app.command.importFromLospec() -- run the palette importer
 end
